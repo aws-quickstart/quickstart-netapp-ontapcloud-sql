@@ -316,7 +316,7 @@
                                 "#!/bin/bash -xe",
                                 "sudo -s",
                                 "export PATH=$PATH:/usr/local/aws/bin/",
-                                "easy_install https://s3.amazonaws.com/quickstart-reference/netapp/ontapcloud/sql/latest/scripts/aws-cfn-bootstrap-latest.tar.gz",
+                                "easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz",
                                 "# Helper function",
                                 "function waitForAction",
                                 "{",
