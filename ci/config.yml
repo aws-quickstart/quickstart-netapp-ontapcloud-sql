@@ -1,5 +1,5 @@
 global:
-  marketplace-ami: false
+  marketplace-ami: true
   owner: quickstart-eng@amazon.com
   qsname: quickstart-netapp-ontapcloud-sql
   regions:
@@ -20,8 +20,8 @@ global:
  
 tests:
   quickstart-netapp-ontapcloud-sqlt1:
-    parameter_input: quickstart-netapp-ontapcloud-sql-example-params1.json
-    template_file: quickstart-netapp-ontapcloud-sql-example1.template
+    parameter_input: netapp_sql_otc_qs_master_parameter.json
+    template_file: netapp_sql_otc_qs_master.template
   quickstart-netapp-ontapcloud-sqlt2:
-    parameter_input: quickstart-netapp-ontapcloud-sql-example-params2.json
-    template_file: quickstart-netapp-ontapcloud-sql-example2.template
+    parameter_input: netapp_sql_otc_qs_master_parameter.json
+    template_file: netapp_sql_otc_qs.template

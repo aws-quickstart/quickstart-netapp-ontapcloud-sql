@@ -1,0 +1,294 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+
+  "Description": "This template creates a single server installation of Microsoft Windows Server 2012 R2 with SQL Server 2014 Standard. **WARNING** This template creates Amazon EC2 Windows instance and related resources. You will be billed for the AWS resources used if you create a stack from this template. Also, you are solely responsible for complying with the license terms for the software downloaded and installed by this template. By creating a stack from this template, you are agreeing to such terms.",
+
+  "Parameters" : {
+    "KeyName": {
+      "Description": "Name of an existing EC2 KeyPair",
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "ConstraintDescription": "Must be the name of an existing EC2 KeyPair."
+    },
+
+    "InstanceType": {
+      "Description": "Amazon EC2 instance type",
+      "Type": "String",
+      "Default": "m4.large",
+      "AllowedValues": [ "t1.micro", "t2.micro", "t2.small", "t2.medium", "m1.small", "m1.medium", "m1.large", "m1.xlarge", "m2.xlarge", "m2.2xlarge", "m2.4xlarge", "m3.medium", "m3.large", "m3.xlarge", "m3.2xlarge", "m4.large", "m4.xlarge", "m4.2xlarge", "m4.4xlarge", "m4.10xlarge", "c1.medium", "c1.xlarge", "c3.large", "c3.xlarge", "c3.2xlarge", "c3.4xlarge", "c3.8xlarge", "c4.large", "c4.xlarge", "c4.2xlarge", "c4.4xlarge", "c4.8xlarge", "g2.2xlarge", "r3.large", "r3.xlarge", "r3.2xlarge", "r3.4xlarge", "r3.8xlarge", "i2.xlarge", "i2.2xlarge", "i2.4xlarge", "i2.8xlarge", "d2.xlarge", "d2.2xlarge", "d2.4xlarge", "d2.8xlarge", "hi1.4xlarge", "hs1.8xlarge", "cr1.8xlarge", "cc2.8xlarge", "cg1.4xlarge" ],
+      "ConstraintDescription": "Must be a valid EC2 instance type."
+    },
+
+	 "VPCId": {
+            "Type": "AWS::EC2::VPC::Id",
+            "Description": "Target VPC for SQL Server"
+     },
+
+	 "SubnetId": {
+            "Type": "AWS::EC2::Subnet::Id",
+            "Description": "SubnetID for SQL Server"
+     },
+
+	"SourceCidrForRemoteManagement" : {
+      "Description" : "IP Cidr from which you are likely to connect (RDP, HTTP, etc.) into the instances. You can add rules later by modifying the created security groups e.g. 54.32.98.160/32",
+	  "Default" : "0.0.0.0/0",
+      "Type" : "String",
+      "MinLength" : "9",
+      "MaxLength" : "18",
+      "AllowedPattern" : "^([0-9]+\\.){3}[0-9]+\\/[0-9]+$"
+	  },
+	  "AdminNodeLIF": {
+		"Description": "IP Address of Admin LIF for ONTAP node",
+		"Type": "String"
+	  },
+ 	 "iScSILIF": {
+		"Description": "IP Address of iScSI LIF for ONTAP node",
+		"Type": "String"
+	  },
+	 "SvmName": {
+		"Description": "Name of the ONTAP SVM",
+		"Type": "String"
+	  },
+ 	"SvmPassword": {
+		"Description": "Password of the SVM",
+		"Type": "String"
+	 },
+	"Capacity": {
+		"Description": "Initial storage capacity",
+		"Type": "Number"
+	 },
+	 "ParentStack": {
+            "Type": "String",
+            "Description": "The parent Cloud Formation Stack Name"
+     }
+	},
+	"Mappings" : {
+		"AWSRegion2AMI" : {
+      "us-east-1": {"SQL2014Standard":  "ami-c0d737d6" },
+      "us-east-2": {"SQL2014Standard" : "ami-d16247b4" },
+		  "us-west-1": {"SQL2014Standard" : "ami-7c25761c" },
+      "us-west-2": { "SQL2014Standard": "ami-2d6bd94d" },
+      "ca-central-1": {"SQL2014Standard" : "ami-4907b52d" },
+      "eu-west-1": { "SQL2014Standard": "ami-5796be24" },
+      "eu-central-1": {"SQL2014Standard" : "ami-74579a1b" },
+		  "eu-west-2": {"SQL2014Standard" : "ami-4a89832e" },
+		  "ap-northeast-1": {"SQL2014Standard" : "ami-f5394492" },
+		  "ap-northeast-2": {"SQL2014Standard" : "ami-7960b617" },
+		  "ap-southeast-1": {"SQL2014Standard" : "ami-9ffb50fc" },
+		  "ap-southeast-2": {"SQL2014Standard" : "ami-de9f9abd" },
+		  "ap-south-1": {"SQL2014Standard" : "ami-27a6d048" },
+		  "sa-east-1": {"SQL2014Standard" : "ami-11bb217d" }
+		}
+	},
+
+  "Resources": {
+    "SQLServerSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable HTTP and RDP",
+        "VpcId": {
+          "Ref": "VPCId"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "80",
+            "ToPort": "80",
+            "CidrIp": { "Ref": "SourceCidrForRemoteManagement" }
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "3389",
+            "ToPort": "3389",
+            "CidrIp": { "Ref": "SourceCidrForRemoteManagement" }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  { "Ref": "AWS::StackName" },
+                  "SG"
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "SQLServerInstance": {
+      "Type": "AWS::EC2::Instance",
+      "Metadata": {
+        "AWS::CloudFormation::Init": {
+          "configSets": {
+            "config": [ "setup" ]
+          },
+          "setup": {
+            "files": {
+              "c:\\cfn\\cfn-hup.conf": {
+                "content": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "[main]\n",
+                      "stack=",
+                      {
+                        "Ref": "AWS::StackId"
+                      },
+                      "\n",
+                      "region=",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "\n"
+                    ]
+                  ]
+                }
+              },
+              "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf": {
+                "content": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "[cfn-auto-reloader-hook]\n",
+                      "triggers=post.update\n",
+                      "path=Resources.SQLServerInstance.Metadata.AWS::CloudFormation::Init\n",
+                      "action=cfn-init.exe -v -s ",
+                      {
+                        "Ref": "AWS::StackId"
+                      },
+                      " -r SQLServerInstance",
+                      " --region ",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "\n"
+                    ] 
+                  ]
+                }
+              },
+              "c:\\cfn\\downloads\\NetApp_PowerShell_Toolkit_4.3.0.msi": {
+                "source": "https://s3.amazonaws.com/netapp-ps-sdk/NetApp_PowerShell_Toolkit_4.3.0.msi"
+              
+              },
+			  "c:\\cfn\\scripts\\NetApp_Connect_ONTAP_Win.ps1": {
+                "source": "https://s3.amazonaws.com/quickstart-reference/netapp/ontapcloud/sql/latest/scripts/netapp_connect_ontap_win.ps1"
+              }
+			},
+            "commands": { 
+				"a-InstallSDK" : {
+					"command" :	"start /wait c:\\windows\\system32\\msiexec.exe /i  c:\\cfn\\downloads\\NetApp_PowerShell_Toolkit_4.3.0.msi /qn /L*V \"C:\\cfn\\log\\NetApp_PSToolKit_MSI.log.txt\" ADDLOCAL=\"F.PSTKDOT\"",
+					 "waitAfterCompletion": "30"
+				},
+				"b-set-execution-policy": {
+				     "command": "powershell.exe -command Set-ExecutionPolicy RemoteSigned -Force",
+                     "waitAfterCompletion": "0"
+                },
+				"c-ConnectONTAP" : {
+					"command": {
+						"Fn::Join": [
+                                        "",
+                                        [
+                                         "powershell.exe -Command c:\\cfn\\scripts\\NetApp_Connect_ONTAP_Win.ps1 ", { "Ref": "AdminNodeLIF" }," ", {"Ref": "iScSILIF" }, " ", { "Ref": "SvmName" }, " ", { "Ref": "SvmPassword" }, " ", { "Ref": "Capacity" }
+                                        ]
+                                    ]
+					},
+					"waitAfterCompletion": "0"
+				}
+			 },
+             "services": { 
+				  "windows" : {
+					"cfn-hup" : {
+							"enabled" : "true",
+							"ensureRunning" : "true",
+							"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+						},
+					"msiscsi" : {
+							"enabled" : "true",
+							"ensureRunning" : "true"
+						}
+					}
+			 }
+            }
+          }
+        },
+      "Properties": {
+        "InstanceType": { "Ref": "InstanceType" },
+        "ImageId": {
+          "Fn::FindInMap": [
+            "AWSRegion2AMI",
+            { "Ref": "AWS::Region" },
+            "SQL2014Standard"
+          ]
+        },
+        "KeyName": { "Ref": "KeyName" },
+        "Tags": [
+          {
+            "Key": "Name",
+			"Value": {"Fn::Join": [ "", [ { "Ref": "ParentStack" }, "_SQLServer2014" ] ]}
+          },
+          {
+			"Key": "CloudFormation Stack",
+            "Value": { "Ref": "AWS::StackName" }
+          }
+        ],
+        "NetworkInterfaces": [
+          {
+            "AssociatePublicIpAddress": "True",
+            "DeleteOnTermination": "True",
+            "SubnetId": { "Ref": "SubnetId" },
+            "DeviceIndex": "0",
+            "GroupSet": [ { "Ref": "SQLServerSecurityGroup" } ]
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<script>\n",
+                "cfn-init.exe -v -c config -s ",
+                {
+                  "Ref": "AWS::StackId"
+                },
+                " -r SQLServerInstance",
+                " --region ",
+                {
+                  "Ref": "AWS::Region"
+                },
+                "\n",
+				"cfn-signal.exe -e %ERRORLEVEL% ", { "Fn::Base64" : { "Ref" : "SQLServerWaitHandle" }}, " >> C:\\cfn\\log\\cfn-signal.log.txt", "\n",
+                "</script>\n"
+              ]
+            ]
+          }
+        }
+       }
+	  },
+		"SQLServerWaitHandle" : {
+			"Type" : "AWS::CloudFormation::WaitConditionHandle"
+		},
+
+		"SQLServerWaitCondition" : {
+			"Type" : "AWS::CloudFormation::WaitCondition",
+			"DependsOn" : "SQLServerInstance",
+			"Properties" : {
+				"Handle" : {"Ref" : "SQLServerWaitHandle"},
+				"Timeout" : "3600"
+			}
+		}
+  },
+
+  "Outputs" : {
+		"SQLServerName":{
+			"Description": "SQL Server launched by Quick Start",
+			"Value": { "Fn::GetAtt": [ "SQLServerInstance", "PublicDnsName" ] }
+		},
+		"SQLIPAddress": {
+			"Description": "Public IP Address of SQL Server",
+			"Value": { "Fn::GetAtt": [ "SQLServerInstance", "PublicIp" ] }
+		}
+	}
+}

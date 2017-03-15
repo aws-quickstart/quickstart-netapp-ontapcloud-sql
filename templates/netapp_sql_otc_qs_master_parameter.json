@@ -1,0 +1,35 @@
+[
+		  {
+              "ParameterKey": "KeyPair",
+              "ParameterValue": "cikey"
+          },
+          {
+              "ParameterKey": "CloudManagerPassword",
+              "ParameterValue": "$[alfred_genpass_32]"
+          },
+          {
+              "ParameterKey": "CloudManagerUserEmail",
+              "ParameterValue": "quickstart-eng@amazon.com"
+          },
+		  {
+              "ParameterKey": "CompanyName",
+              "ParameterValue": "Amazon"
+          },
+          {
+              "ParameterKey": "AvailabilityZones",
+              "ParameterValue": "$[alfred_genaz_2]"
+          },
+          {
+              "ParameterKey": "CIDRRange",
+              "ParameterValue": "172.18.0.0"
+          },
+          {
+              "ParameterKey": "RemoteAccessCIDR",
+              "ParameterValue": "0.0.0.0/0"
+          },
+          {
+              "ParameterKey": "Capacity",
+              "ParameterValue": "100"
+          },
+
+]
