@@ -30,8 +30,7 @@
 
 	"SourceCidrForRemoteManagement" : {
       "Description" : "IP Cidr from which you are likely to connect (RDP, HTTP, etc.) into the instances. You can add rules later by modifying the created security groups e.g. 54.32.98.160/32",
-	  "Default" : "0.0.0.0/0",
-      "Type" : "String",
+	    "Type" : "String",
       "MinLength" : "9",
       "MaxLength" : "18",
       "AllowedPattern" : "^([0-9]+\\.){3}[0-9]+\\/[0-9]+$"
@@ -75,23 +74,51 @@
 		  "Type": "String"
 	}
    },
-	"Mappings" : {
-		"AWSRegion2AMI" : {
-			"us-east-1": {"SQL2014Standard":  "ami-c0d737d6" },
-			"us-east-2": {"SQL2014Standard" : "ami-d16247b4" },
-			"us-west-1": {"SQL2014Standard" : "ami-7c25761c" },
-			"us-west-2": { "SQL2014Standard": "ami-2d6bd94d" },
-			"ca-central-1": {"SQL2014Standard" : "ami-4907b52d" },
-			"eu-west-1": { "SQL2014Standard": "ami-5796be24" },
-			"eu-central-1": {"SQL2014Standard" : "ami-74579a1b" },
-			"eu-west-2": {"SQL2014Standard" : "ami-4a89832e" },
-			"ap-northeast-1": {"SQL2014Standard" : "ami-f5394492" },
-			"ap-northeast-2": {"SQL2014Standard" : "ami-7960b617" },
-			"ap-southeast-1": {"SQL2014Standard" : "ami-9ffb50fc" },
-			"ap-southeast-2": {"SQL2014Standard" : "ami-de9f9abd" },
-			"ap-south-1": {"SQL2014Standard" : "ami-27a6d048" },
-			"sa-east-1": {"SQL2014Standard" : "ami-11bb217d" }
-		},
+    "Mappings": {
+        "AWSAMIRegionMap": {
+            "AMI": {
+                "SQL2014Standard": "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP1_Standard-2017.01.11"
+            },
+            "ap-northeast-1": {
+                "SQL2014Standard": "ami-f5394492"
+            },
+            "ap-northeast-2": {
+                "SQL2014Standard": "ami-7960b617"
+            },
+            "ap-south-1": {
+                "SQL2014Standard": "ami-27a6d048"
+            },
+            "ap-southeast-1": {
+                "SQL2014Standard": "ami-9ffb50fc"
+            },
+            "ap-southeast-2": {
+                "SQL2014Standard": "ami-de9f9abd"
+            },
+            "eu-central-1": {
+                "SQL2014Standard": "ami-74579a1b"
+            },
+            "eu-west-1": {
+                "SQL2014Standard": "ami-5796be24"
+            },
+            "sa-east-1": {
+                "SQL2014Standard": "ami-11bb217d"
+            },
+            "us-east-1": {
+                "SQL2014Standard": "ami-c0d737d6"
+            },
+            "us-east-2": {
+                "SQL2014Standard": "ami-d16247b4"
+            },
+            "us-west-1": {
+                "SQL2014Standard": "ami-7c25761c"
+            },
+            "us-west-2": {
+                "SQL2014Standard": "ami-2d6bd94d"
+            },
+  	    "ca-central-1": {
+                "SQL2014Standard": "ami-4907b52d"
+            }
+        },
 		"AWSInfoRegionMap": {
             "ap-northeast-1": { "Partition": "aws", "QuickStartS3URL": "https://s3.amazonaws.com" },
             "ap-northeast-2": { "Partition": "aws", "QuickStartS3URL": "https://s3.amazonaws.com" },
@@ -199,7 +226,6 @@
               },
               "c:\\cfn\\downloads\\NetApp_PowerShell_Toolkit_4.3.0.msi": {
                 "source": "https://s3.amazonaws.com/netapp-ps-sdk/NetApp_PowerShell_Toolkit_4.3.0.msi"
-              
               },
 			  "c:\\cfn\\scripts\\NetApp_Connect_ONTAP_Win.ps1": {
                 "source": {
@@ -224,7 +250,8 @@
                             "scripts/netapp_connect_ontap_win.ps1"
                         ]
                     ]
-              }
+                }
+			  }
 			},
             "commands": { 
 				"a-InstallSDK" : {
@@ -267,7 +294,7 @@
         "InstanceType": { "Ref": "InstanceType" },
         "ImageId": {
           "Fn::FindInMap": [
-            "AWSRegion2AMI",
+            "AWSAMIRegionMap",
             { "Ref": "AWS::Region" },
             "SQL2014Standard"
           ]
@@ -329,7 +356,7 @@
 			}
 		}
   },
-
+  
   "Outputs" : {
 		"SQLServerName":{
 			"Description": "SQL Server launched by Quick Start",

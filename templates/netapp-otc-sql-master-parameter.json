@@ -1,7 +1,7 @@
 [
 		  {
               "ParameterKey": "KeyPair",
-              "ParameterValue": "cikey"
+              "ParameterValue": "$[alfred_getkeypair]"
           },
           {
               "ParameterKey": "CloudManagerPassword",
@@ -9,11 +9,11 @@
           },
           {
               "ParameterKey": "CloudManagerUserEmail",
-              "ParameterValue": "quickstart-eng@amazon.com"
+              "ParameterValue": "user@example.com"
           },
 		  {
               "ParameterKey": "CompanyName",
-              "ParameterValue": "Amazon"
+              "ParameterValue": "Example"
           },
           {
               "ParameterKey": "AvailabilityZones",
@@ -25,11 +25,10 @@
           },
           {
               "ParameterKey": "RemoteAccessCIDR",
-              "ParameterValue": "0.0.0.0/0"
+              "ParameterValue": "172.18.0.0"
           },
           {
               "ParameterKey": "Capacity",
               "ParameterValue": "100"
-          },
-
+          }
 ]

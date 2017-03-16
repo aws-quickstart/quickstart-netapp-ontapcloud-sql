@@ -1,6 +1,6 @@
 {
-    "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template deploys and configures a NetApp OnCommand Cloud Manager instance, a NetApp ONTAP Cloud instance, and a Windows 2012 server with SQL 2014.  All configuraiton is done for you to create the iSCSI LUNs on the ONTAP Cloud system and have them mounted and avaialble to the SQL server.  This template will also deploy everything into a new VPC and public subnet. **WARNING** This template creates Amazon EC2 Windows instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template deploys and configures a NetApp OnCommand Cloud Manager instance, and a NetApp ONTAP Cloud instance. The ONTAP Cloud system will be fully configured and ready to be a Destination copy for Disaster Recovery replication, or to serve up NFS, CIFS or iSCSI storage targets to your EC2 compute. For this Quick Start the template will also launch a Windows 2012 server with SQL 2014. All applicable iSCSI LUNs will be created on the ONTAP Cloud system and mapped to the Windows Server. Everything into a VPC and public subnet the user specifies. **WARNING** This template creates Amazon EC2 Windows instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
   "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
@@ -77,15 +77,16 @@
             }
         }
     },
-  "Parameters": { 
+  "Parameters": {
 
-    "CIDRRange": {
-      "Description": "VPCCIDR Range (will be created as a /16 block)",
-      "Type": "String",
-      "Default": "172.18.0.0",
-      "AllowedValues": [ "172.18.0.0", "172.19.0.0", "172.20.0.0", "172.21.0.0", "172.22.0.0", "172.23.0.0" ]
+    "VPCId": {
+      "Type": "AWS::EC2::VPC::Id",
+      "Description": "Target VPC for Cloud Manager and ONTAP Cloud"
     },
-
+    "SubnetId": {
+      "Type": "AWS::EC2::Subnet::Id",
+      "Description": "SubnetID for Cloud Manager and ONTAP Cloud"
+    },
     "CompanyName": {
       "Type": "String",
       "MinLength": "4",
@@ -133,7 +134,7 @@
       "Description": "S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-). Accept default for a bucket already configured.",
       "Type": "String"
     },
-    "QSS3KeyPrefix": {
+    "QSS3KeyPrefix": { 
       "AllowedPattern": "^[0-9a-zA-Z-]+(/[0-9a-zA-Z-]+)*$",
       "ConstraintDescription": "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with a forward slash (/), which is automatically appended.",
       "Default": "netapp/ontapcloud/sql/latest",
@@ -194,39 +195,7 @@
         }
     },
   "Resources": {
-        "VPC": {
-            "Type": "AWS::CloudFormation::Stack",
-            "Properties": {
-                "TemplateURL": {
-                    "Fn::Join": [
-                        "/",
-                        [
-                            {
-                                "Fn::FindInMap": [
-                                    "AWSInfoRegionMap",
-                                    {
-                                        "Ref": "AWS::Region"
-                                    },
-                                    "QuickStartS3URL"
-                                ]
-                            },
-                            {
-                                "Ref": "QSS3BucketName"
-                            },
-                            {
-                                "Ref": "QSS3KeyPrefix"
-                            },
-                            "templates/netapp_newvpc.template"
-                        ]
-                    ]
-                },
-                "Parameters": {
-                    "CIDRRange": {
-                        "Ref": "CIDRRange"
-                    }
-                }
-            }
-        },
+
         "OTC": {
             "Type": "AWS::CloudFormation::Stack",
             "Properties": {
@@ -249,7 +218,7 @@
                             {
                                 "Ref": "QSS3KeyPrefix"
                             },
-                            "templates/netapp_otc.template"
+                            "templates/netapp-otc.template"
                         ]
                     ]
                 },
@@ -261,16 +230,10 @@
                         "Ref": "KeyPair"
                     },
                     "VPCId": {
-                        "Fn::GetAtt": [
-                            "VPC",
-                            "Outputs.outputVPCID"
-                        ]
+                        "Ref": "VPCId"
                     },
                     "SubnetId": {
-                        "Fn::GetAtt": [
-                            "VPC",
-                            "Outputs.outputPublicSubnet"
-                        ]
+                        "Ref": "SubnetId"
                     },
                     "RemoteAccessCIDR": {
                         "Ref": "RemoteAccessCIDR"
@@ -291,7 +254,7 @@
 			"Type": "AWS::CloudFormation::Stack",
 			"DependsOn": "OTC",
             "Properties": {
-              "TemplateURL": {
+                "TemplateURL":  {
                 "Fn::Join": [
                   "/",
                   [
@@ -310,27 +273,21 @@
                     {
                       "Ref": "QSS3KeyPrefix"
                     },
-                    "templates/netapp_sqlserver.template"
+                    "templates/netapp-otc-sqlserver.template"
                   ]
                 ]
               },
-              "Parameters": {
+                "Parameters": {
                     "KeyName": {
 						"Ref": "KeyPair"
 					},
-                    "VPCId": {
-                        "Fn::GetAtt": [
-                            "VPC",
-                            "Outputs.outputVPCID"
-                        ]
+					"VPCId": {
+                        "Ref": "VPCId"
                     },
                     "SubnetId": {
-                        "Fn::GetAtt": [
-                            "VPC",
-                            "Outputs.outputPublicSubnet"
-                        ]
+                        "Ref": "SubnetId"
                     },
-                    "SourceCidrForRDP": {
+                    "SourceCidrForRemoteManagement": {
                         "Ref": "RemoteAccessCIDR"
                     },
 					"SvmName": {

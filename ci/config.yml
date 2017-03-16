@@ -20,8 +20,8 @@ global:
  
 tests:
   quickstart-netapp-ontapcloud-sqlt1:
-    parameter_input: netapp_sql_otc_qs_master_parameter.json
-    template_file: netapp_sql_otc_qs_master.template
+    parameter_input: netapp-otc-sql-master-parameter.json
+    template_file: netapp-otc-sql-master.template
   quickstart-netapp-ontapcloud-sqlt2:
-    parameter_input: netapp_sql_otc_qs_master_parameter.json
-    template_file: netapp_sql_otc_qs.template
+    parameter_input: netapp-otc-sql-master-parameter.json
+    template_file: netapp-otc-sqlserver.template

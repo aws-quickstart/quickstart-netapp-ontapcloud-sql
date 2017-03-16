@@ -307,7 +307,7 @@
                 "InstanceType": "t2.medium",
                 "IamInstanceProfile": { "Ref": "OCCMInstanceProfile" },
                 "KeyName": { "Ref": "KeyPair" },
-                "Monitoring": "false",
+                "Monitoring": "false", 
                 "UserData": {
                     "Fn::Base64": {
                         "Fn::Join": [
