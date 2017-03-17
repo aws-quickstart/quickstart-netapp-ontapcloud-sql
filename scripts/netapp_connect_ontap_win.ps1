@@ -14,6 +14,8 @@ param(
 
 function Connect-ONTAP([String]$AdminLIF, [String]$iScSILIF, [String]$SVMName,[String]$SVMPwd, [decimal]$Capacity)
 {
+    $ErrorActionPreference = 'Stop'
+
     try {
     
         Start-Transcript -Path C:\cfn\log\WinEC2_Connect_Storage.ps1.txt -Append
@@ -86,6 +88,7 @@ function Connect-ONTAP([String]$AdminLIF, [String]$iScSILIF, [String]$SVMName,[S
     } 
     catch {
         Write-Output "$($_.exception.message)@ $(Get-Date)"
+        $ErrorActionPreference = "Stop"
 		exit 1
     }
  }

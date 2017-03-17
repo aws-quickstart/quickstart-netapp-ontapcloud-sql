@@ -9,15 +9,13 @@
       "Type": "AWS::EC2::KeyPair::KeyName",
       "ConstraintDescription": "Must be the name of an existing EC2 KeyPair."
     },
-
     "InstanceType": {
       "Description": "Amazon EC2 instance type",
       "Type": "String",
       "Default": "m4.large",
-      "AllowedValues": [ "t1.micro", "t2.micro", "t2.small", "t2.medium", "m1.small", "m1.medium", "m1.large", "m1.xlarge", "m2.xlarge", "m2.2xlarge", "m2.4xlarge", "m3.medium", "m3.large", "m3.xlarge", "m3.2xlarge", "m4.large", "m4.xlarge", "m4.2xlarge", "m4.4xlarge", "m4.10xlarge", "c1.medium", "c1.xlarge", "c3.large", "c3.xlarge", "c3.2xlarge", "c3.4xlarge", "c3.8xlarge", "c4.large", "c4.xlarge", "c4.2xlarge", "c4.4xlarge", "c4.8xlarge", "g2.2xlarge", "r3.large", "r3.xlarge", "r3.2xlarge", "r3.4xlarge", "r3.8xlarge", "i2.xlarge", "i2.2xlarge", "i2.4xlarge", "i2.8xlarge", "d2.xlarge", "d2.2xlarge", "d2.4xlarge", "d2.8xlarge", "hi1.4xlarge", "hs1.8xlarge", "cr1.8xlarge", "cc2.8xlarge", "cg1.4xlarge" ],
+      "AllowedValues": [ "m1.small","m1.medium","m1.large","m1.xlarge","m2.xlarge","m2.2xlarge","m2.4xlarge","m3.medium","m3.large","m3.xlarge","m3.2xlarge","c1.xlarge","cc2.8xlarge","cg1.4xlarge","cr1.8xlarge","hi1.4xlarge","hs1.8xlarge","c3.large","c3.xlarge","c3.2xlarge","c3.4xlarge","c3.8xlarge","i2.xlarge","i2.2xlarge","i2.4xlarge","i2.8xlarge","r3.large","r3.xlarge","r3.2xlarge","r3.4xlarge","r3.8xlarge","c4.large","c4.xlarge","c4.2xlarge","c4.4xlarge","c4.8xlarge","m4.large","m4.xlarge","m4.2xlarge","m4.4xlarge","m4.10xlarge","x1.16xlarge","x1.32xlarge","m4.16xlarge","r4.large","r4.xlarge","r4.2xlarge","r4.4xlarge","r4.8xlarge","r4.16xlarge" ],
       "ConstraintDescription": "Must be a valid EC2 instance type."
     },
-
 	 "VPCId": {
             "Type": "AWS::EC2::VPC::Id",
             "Description": "Target VPC for SQL Server"
@@ -55,10 +53,10 @@
 		"Description": "Initial storage capacity",
 		"Type": "Number"
 	 },
-	 "ParentStack": {
-            "Type": "String",
-            "Description": "The parent Cloud Formation Stack Name"
-     },
+	 "AUniqueName": {
+      "Type": "String",
+      "Description": "A unique name to be used to identify the AWS resources deployed as part of this template (i.e. use the StackName)"
+   },
 	 "QSS3BucketName": {
 			"AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
 			"ConstraintDescription": "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
@@ -77,46 +75,46 @@
     "Mappings": {
         "AWSAMIRegionMap": {
             "AMI": {
-                "SQL2014Standard": "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP1_Standard-2017.01.11"
+                "WS2012R2SQLSTD2014": "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP1_Standard-2017.01.11"
             },
             "ap-northeast-1": {
-                "SQL2014Standard": "ami-f5394492"
+                "WS2012R2SQLSTD2014": "ami-f5394492"
             },
             "ap-northeast-2": {
-                "SQL2014Standard": "ami-7960b617"
+                "WS2012R2SQLSTD2014": "ami-7960b617"
             },
             "ap-south-1": {
-                "SQL2014Standard": "ami-27a6d048"
+                "WS2012R2SQLSTD2014": "ami-27a6d048"
             },
             "ap-southeast-1": {
-                "SQL2014Standard": "ami-9ffb50fc"
+                "WS2012R2SQLSTD2014": "ami-9ffb50fc"
             },
             "ap-southeast-2": {
-                "SQL2014Standard": "ami-de9f9abd"
+                "WS2012R2SQLSTD2014": "ami-de9f9abd"
             },
             "eu-central-1": {
-                "SQL2014Standard": "ami-74579a1b"
+                "WS2012R2SQLSTD2014": "ami-74579a1b"
             },
             "eu-west-1": {
-                "SQL2014Standard": "ami-5796be24"
+                "WS2012R2SQLSTD2014": "ami-5796be24"
             },
             "sa-east-1": {
-                "SQL2014Standard": "ami-11bb217d"
+                "WS2012R2SQLSTD2014": "ami-11bb217d"
             },
             "us-east-1": {
-                "SQL2014Standard": "ami-c0d737d6"
+                "WS2012R2SQLSTD2014": "ami-c0d737d6"
             },
             "us-east-2": {
-                "SQL2014Standard": "ami-d16247b4"
+                "WS2012R2SQLSTD2014": "ami-d16247b4"
             },
             "us-west-1": {
-                "SQL2014Standard": "ami-7c25761c"
+                "WS2012R2SQLSTD2014": "ami-7c25761c"
             },
             "us-west-2": {
-                "SQL2014Standard": "ami-2d6bd94d"
+                "WS2012R2SQLSTD2014": "ami-2d6bd94d"
             },
-  	    "ca-central-1": {
-                "SQL2014Standard": "ami-4907b52d"
+  	        "ca-central-1": {
+                "WS2012R2SQLSTD2014": "ami-4907b52d"
             }
         },
 		"AWSInfoRegionMap": {
@@ -296,14 +294,14 @@
           "Fn::FindInMap": [
             "AWSAMIRegionMap",
             { "Ref": "AWS::Region" },
-            "SQL2014Standard"
+            "WS2012R2SQLSTD2014"
           ]
         },
         "KeyName": { "Ref": "KeyName" },
         "Tags": [
           {
             "Key": "Name",
-			"Value": {"Fn::Join": [ "", [ { "Ref": "ParentStack" }, "_SQLServer2014" ] ]}
+			"Value": {"Fn::Join": [ "", [ { "Ref": "AUniqueName" }, "_SQLServer2014" ] ]}
           },
           {
 			"Key": "CloudFormation Stack",

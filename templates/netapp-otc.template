@@ -41,74 +41,76 @@
             "MinLength": "9",
             "MaxLength": "18",            
             "AllowedPattern" : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
-            "Default" : "0.0.0.0/0",
             "ConstraintDescription" : "Must be a valid CIDR range of the form x.x.x.x/x."
         },
-        "ParentStack": {
+        "AUniqueName": {
             "Type": "String",
-            "Description": "The parent Cloud Formation Stack Name"
+            "Description": "A unique name to be used to identify the AWS resources deployed as part of this template (i.e. use the StackName)"
         }
     },
 
     "Mappings": {
-        "RegionMap": {
+        "AWSAMIRegionMap": {
+            "AMI": {
+                "NETAPPOCCM": "OnCommandCloudManager-3.2.0-Marketplace- 06/02/2017_105843-d9adb18b-c57c-4615-9bb7-a9c64efd69b1-ami-d45094c2.3"
+			},
             "us-west-2": {
                 "AMI": "ami-68e96c08",
-                "OccmInstance": "r4.xlarge"
+                "NETAPPOCCM": "r4.xlarge"
             },
             "us-west-1": {
                 "AMI": "ami-e63a6686",
-                "OccmInstance": "r4.xlarge"
+                "NETAPPOCCM": "r4.xlarge"
             },
             "us-east-1": {
                 "AMI": "ami-6c65a27a",
-                "OccmInstance": "r4.xlarge"
+                "NETAPPOCCM": "r4.xlarge"
             },
             "us-east-2": {
                 "AMI": "ami-4811342d",
-                "OccmInstance": "r4.xlarge"
+                "NETAPPOCCM": "r4.xlarge"
             },
             "eu-central-1": {
                 "AMI": "ami-b7c20ad8",
-                "OccmInstance": "r4.xlarge"
+                "NETAPPOCCM": "r4.xlarge"
             },
             "eu-west-1": {
                 "AMI": "ami-8dd7f2eb",
-                "OccmInstance": "r4.xlarge"
+                "NETAPPOCCM": "r4.xlarge"
             },
             "eu-west-2": {
                 "AMI": "ami-6f73660b",
-                "OccmInstance": "r4.xlarge"
+                "NETAPPOCCM": "r4.xlarge"
             },
             "ap-southeast-1": {
                 "AMI": "ami-432e9a20",
-                "OccmInstance": "r4.xlarge"
+                "NETAPPOCCM": "r4.xlarge"
             },
             "ap-southeast-2": {
                 "AMI": "ami-d8aaacbb",
-                "OccmInstance": "r4.xlarge"
+                "NETAPPOCCM": "r4.xlarge"
             },
             "ap-south-1": {
                 "AMI": "ami-08443567",
-                "OccmInstance": "r4.xlarge"
+                "NETAPPOCCM": "r4.xlarge"
             },
             "ap-northeast-1": {
                 "AMI": "ami-21abeb46",
-                "OccmInstance": "r4.xlarge"
+                "NETAPPOCCM": "r4.xlarge"
             },
             "ap-northeast-2": {
               "AMI": "ami-1e61b070",
-              "OccmInstance": "r4.xlarge"
+              "NETAPPOCCM": "r4.xlarge"
             },
             "sa-east-1": {
                 "AMI": "ami-b0c3a7dc",
-                "OccmInstance": "r4.xlarge"
+                "NETAPPOCCM": "r4.xlarge"
             },
             "ca-central-1": {
                 "AMI": "ami-f8b8059c",
-                "OccmInstance": "r4.xlarge"
+                "NETAPPOCCM": "r4.xlarge"
             }
-        }
+		}
     },
 
     "Resources": {
@@ -210,7 +212,7 @@
                         }
                     ]
                 },
-                "PolicyName": {"Fn::Join": [ "", [ { "Ref": "ParentStack" }, "-OCCMPolicy" ] ]}
+                "PolicyName": {"Fn::Join": [ "", [ { "Ref": "AUniqueName" }, "-OCCMPolicy" ] ]}
             }]
           },
           "Type": "AWS::IAM::Role"
@@ -239,7 +241,7 @@
                 "Tags": [
                     {
                         "Key": "Name",
-                        "Value": {"Fn::Join": [ "", [ { "Ref": "ParentStack" }, "-SG" ] ]}
+                        "Value": {"Fn::Join": [ "", [ { "Ref": "AUniqueName" }, "-SG" ] ]}
                     }
                 ]
             }
@@ -295,7 +297,7 @@
             "Properties": {
                 "DisableApiTermination": "FALSE",
                 "ImageId": {
-                    "Fn::FindInMap": [ "RegionMap", { "Ref": "AWS::Region" }, "AMI" ]
+                    "Fn::FindInMap": [ "AWSAMIRegionMap", { "Ref": "AWS::Region" }, "AMI" ]
                 },
                 "NetworkInterfaces": [
                     {
@@ -335,7 +337,7 @@
                                 "  exit 1",
                                 "fi",
                                 "}",
-                                {"Fn::Join": [ "", [ "name=", { "Ref": "ParentStack" } ] ]},
+                                {"Fn::Join": [ "", [ "name=", { "Ref": "AUniqueName" } ] ]},
                                 {"Fn::Join": [ "", [ "customer=", { "Ref": "CompanyName" } ] ]},
                                 {"Fn::Join": [ "", [ "vpcID=", { "Ref": "VPCId" } ] ]},
                                 {"Fn::Join": [ "", [ "subnetID=", { "Ref": "SubnetId" } ] ]},
@@ -346,7 +348,7 @@
                                 {"Fn::Join": [ "", [ "otcTemplateHandle=", { "Fn::Base64": { "Ref": "OTCCompleteHandle" } } ] ]},
                                 {"Fn::Join": [ "", [ "otcTemplateHandle2=", { "Fn::Base64": { "Ref": "OTCCompleteHandle2" } } ] ]},
                                 {"Fn::Join": [ "", [ "otcTemplateHandle3=", { "Fn::Base64": { "Ref": "OTCCompleteHandle3" } } ] ]},
-                                {"Fn::Join": [ "", [ "otcInstance=", { "Fn::FindInMap": [ "RegionMap", { "Ref": "AWS::Region" }, "OccmInstance" ] } ] ]},
+                                {"Fn::Join": [ "", [ "otcInstance=", { "Fn::FindInMap": [ "AWSAMIRegionMap", { "Ref": "AWS::Region" }, "OccmInstance" ] } ] ]},
                                 "wget -O /usr/bin/jq http://stedolan.github.io/jq/download/linux64/jq",
                                 "sleep 5",
                                 "chmod +x /usr/bin/jq",
@@ -395,7 +397,7 @@
                 "Tags": [
                     {
                         "Key": "Name",
-                        "Value": {"Fn::Join": [ "", [ { "Ref": "ParentStack" }, "_CloudManager" ] ]}
+                        "Value": {"Fn::Join": [ "", [ { "Ref": "AUniqueName" }, "_CloudManager" ] ]}
                     },
                     {
                         "Key": "CloudFormation Stack",
@@ -420,7 +422,7 @@
             "Description" : "CloudManager URL"
         },
         "ONTAPCloudSvmName" : {
-            "Value" : {"Fn::Join": [ "", [ "svm_", {"Fn::Join": [ "", [ { "Ref": "ParentStack" }, "_OTC" ] ]} ] ]},
+            "Value" : {"Fn::Join": [ "", [ "svm_", {"Fn::Join": [ "", [ { "Ref": "AUniqueName" }, "_OTC" ] ]} ] ]},
             "Description" : "ONTAP Cloud SVM Name"
         },
         "IscsiDataLif" : {

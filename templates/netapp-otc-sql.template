@@ -26,6 +26,7 @@
                         "default": "ONTAP Cloud General Configuration"
                     },
                     "Parameters": [
+                        "AUniqueName",
                         "CompanyName",
                         "CloudManagerUserEmail",
                         "CloudManagerPassword"
@@ -73,6 +74,9 @@
                 },
                 "QSS3KeyPrefix": {
                     "default": "Quick Start S3 Key Prefix"
+                },
+                "AUniqueName": {
+                    "default": "A Unique Name"
                 }
             }
         }
@@ -140,7 +144,11 @@
       "Default": "netapp/ontapcloud/sql/latest",
       "Description": "S3 key prefix for the Quick Start assets. This prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with a forward slash (/), which is automatically appended. Accept default for standard configuration.",
       "Type": "String"
-    }
+    },
+     "AUniqueName": {
+      "Type": "String",
+      "Description": "A unique name to be used to identify the AWS resources deployed as part of this template (i.e. use the StackName)"
+   }
   },
   "Mappings": {
         "AWSInfoRegionMap": {
@@ -244,7 +252,7 @@
                     "CloudManagerPassword": {
                         "Ref": "CloudManagerPassword"
                     },
-                    "ParentStack": {
+                    "AUniqueName": {
                         "Ref": "AWS::StackName"
                     }
                 }
@@ -314,7 +322,7 @@
 					"Capacity": {
                         "Ref": "Capacity"
                     },
-					"ParentStack": {
+					"AUniqueName": {
                         "Ref": "AWS::StackName"
                     },
 					"QSS3BucketName" : { 

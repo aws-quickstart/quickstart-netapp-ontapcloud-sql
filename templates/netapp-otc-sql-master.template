@@ -227,8 +227,9 @@
                 }
             }
         },
-        "OTC": {
+        "NetApp": {
             "Type": "AWS::CloudFormation::Stack",
+            "DependsOn": "VPC",
             "Properties": {
                 "TemplateURL": {
                     "Fn::Join": [
@@ -249,7 +250,7 @@
                             {
                                 "Ref": "QSS3KeyPrefix"
                             },
-                            "templates/netapp-otc.template"
+                            "templates/netapp-otc-sql.template"
                         ]
                     ]
                 },
@@ -281,91 +282,12 @@
                     "CloudManagerPassword": {
                         "Ref": "CloudManagerPassword"
                     },
-                    "ParentStack": {
-                        "Ref": "AWS::StackName"
-                    }
-                }
-            }
-        },
-		"SQL" :{
-			"Type": "AWS::CloudFormation::Stack",
-			"DependsOn": "OTC",
-            "Properties": {
-              "TemplateURL": {
-                "Fn::Join": [
-                  "/",
-                  [
-                    {
-                      "Fn::FindInMap": [
-                        "AWSInfoRegionMap",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "QuickStartS3URL"
-                      ]
-                    },
-                    {
-                      "Ref": "QSS3BucketName"
-                    },
-                    {
-                      "Ref": "QSS3KeyPrefix"
-                    },
-                    "templates/netapp-otc-sqlserver.template"
-                  ]
-                ]
-              },
-              "Parameters": {
-                    "KeyName": {
-						"Ref": "KeyPair"
-					},
-                    "VPCId": {
-                        "Fn::GetAtt": [
-                            "VPC",
-                            "Outputs.outputVPCID"
-                        ]
-                    },
-                    "SubnetId": {
-                        "Fn::GetAtt": [
-                            "VPC",
-                            "Outputs.outputPublicSubnet"
-                        ]
-                    },
-                    "SourceCidrForRemoteManagement": {
-                        "Ref": "RemoteAccessCIDR"
-                    },
-					"SvmName": {
-                        "Fn::GetAtt": [
-                            "OTC",
-                            "Outputs.ONTAPCloudSvmName"
-                        ]
-                    },
-					"SvmPassword": {
-                        "Ref": "CloudManagerPassword"
-                    },
-                    "AdminNodeLIF": {
-                        "Fn::GetAtt": [
-                            "OTC",
-                            "Outputs.ClusterManagementLif"
-                        ]
-                    },
-					"iScSILIF": {
-						"Fn::GetAtt": [
-                            "OTC",
-                            "Outputs.IscsiDataLif"
-                        ]
-                    },
-					"Capacity": {
+                    "Capacity": {
                         "Ref": "Capacity"
                     },
-					"ParentStack": {
+                    "AUniqueName": {
                         "Ref": "AWS::StackName"
-                    },
-					"QSS3BucketName" : { 
-						"Ref" : "QSS3BucketName" 
-					},
-					"QSS3KeyPrefix" : { 
-						"Ref" : "QSS3KeyPrefix" 
-					}
+                    }
                 }
             }
 		}
@@ -373,15 +295,15 @@
 	"Outputs" : {
 		"SQLServerName":{
 			"Description": "SQL Server launched by Quick Start",
-			"Value": { "Fn::GetAtt": [ "SQL", "Outputs.SQLServerName" ] }
+			"Value": { "Fn::GetAtt": [ "NetApp", "Outputs.SQLServerName" ] }
 		},
 		"SQLIPAddress": {
 			"Description": "Public IP Address of SQL Server",
-			"Value": { "Fn::GetAtt": [ "SQL", "Outputs.SQLIPAddress" ] }
+			"Value": { "Fn::GetAtt": [ "NetApp", "Outputs.SQLIPAddress" ] }
 		},
         "CloudManagerURL" : {
             "Description" : "CloudManager URL",
-            "Value": { "Fn::GetAtt": [ "OTC", "Outputs.CloudManagerURL" ] }
+            "Value": { "Fn::GetAtt": [ "NetApp", "Outputs.CloudManagerURL" ] }
         }
 	}
 }
