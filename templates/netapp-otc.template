@@ -50,67 +50,53 @@
     },
 
     "Mappings": {
-        "AWSAMIRegionMap": {
-            "AMI": {
-                "NETAPPOCCM": "OnCommandCloudManager-3.2.0-Marketplace- 06/02/2017_105843-d9adb18b-c57c-4615-9bb7-a9c64efd69b1-ami-d45094c2.3"
-			},
-            "us-west-2": {
-                "AMI": "ami-68e96c08",
-                "NETAPPOCCM": "r4.xlarge"
-            },
-            "us-west-1": {
-                "AMI": "ami-e63a6686",
-                "NETAPPOCCM": "r4.xlarge"
-            },
-            "us-east-1": {
-                "AMI": "ami-6c65a27a",
-                "NETAPPOCCM": "r4.xlarge"
-            },
-            "us-east-2": {
-                "AMI": "ami-4811342d",
-                "NETAPPOCCM": "r4.xlarge"
-            },
-            "eu-central-1": {
-                "AMI": "ami-b7c20ad8",
-                "NETAPPOCCM": "r4.xlarge"
-            },
-            "eu-west-1": {
-                "AMI": "ami-8dd7f2eb",
-                "NETAPPOCCM": "r4.xlarge"
-            },
-            "eu-west-2": {
-                "AMI": "ami-6f73660b",
-                "NETAPPOCCM": "r4.xlarge"
-            },
-            "ap-southeast-1": {
-                "AMI": "ami-432e9a20",
-                "NETAPPOCCM": "r4.xlarge"
-            },
-            "ap-southeast-2": {
-                "AMI": "ami-d8aaacbb",
-                "NETAPPOCCM": "r4.xlarge"
-            },
-            "ap-south-1": {
-                "AMI": "ami-08443567",
-                "NETAPPOCCM": "r4.xlarge"
-            },
-            "ap-northeast-1": {
-                "AMI": "ami-21abeb46",
-                "NETAPPOCCM": "r4.xlarge"
-            },
-            "ap-northeast-2": {
-              "AMI": "ami-1e61b070",
-              "NETAPPOCCM": "r4.xlarge"
-            },
-            "sa-east-1": {
-                "AMI": "ami-b0c3a7dc",
-                "NETAPPOCCM": "r4.xlarge"
-            },
-            "ca-central-1": {
-                "AMI": "ami-f8b8059c",
-                "NETAPPOCCM": "r4.xlarge"
-            }
-		}
+      "AWSAMIRegionMap": {
+        "AMI": {
+          "NETAPPOCCM": "OnCommandCloudManager-3.2.0-Marketplace- 06/02/2017_105843-d9adb18b-c57c-4615-9bb7-a9c64efd69b1-ami-d45094c2.3"
+        },
+        "ap-northeast-1": {
+          "NETAPPOCCM": "ami-21abeb46"
+        },
+        "ap-northeast-2": {
+          "NETAPPOCCM": "ami-1e61b070"
+        },
+        "ap-south-1": {
+          "NETAPPOCCM": "ami-08443567"
+        },
+        "ap-southeast-1": {
+          "NETAPPOCCM": "ami-432e9a20"
+        },
+        "ap-southeast-2": {
+          "NETAPPOCCM": "ami-d8aaacbb"
+        },
+        "ca-central-1": {
+          "NETAPPOCCM": "ami-f8b8059c"
+        },
+        "eu-central-1": {
+          "NETAPPOCCM": "ami-b7c20ad8"
+        },
+        "eu-west-1": {
+          "NETAPPOCCM": "ami-8dd7f2eb"
+        },
+        "eu-west-2": {
+          "NETAPPOCCM": "ami-6f73660b"
+        },
+        "sa-east-1": {
+          "NETAPPOCCM": "ami-b0c3a7dc"
+        },
+        "us-east-1": {
+          "NETAPPOCCM": "ami-6c65a27a"
+        },
+        "us-east-2": {
+          "NETAPPOCCM": "ami-4811342d"
+        },
+        "us-west-1": {
+          "NETAPPOCCM": "ami-e63a6686"
+        },
+        "us-west-2": {
+          "NETAPPOCCM": "ami-68e96c08"
+        }
+      }
     },
 
     "Resources": {
@@ -297,7 +283,7 @@
             "Properties": {
                 "DisableApiTermination": "FALSE",
                 "ImageId": {
-                    "Fn::FindInMap": [ "AWSAMIRegionMap", { "Ref": "AWS::Region" }, "AMI" ]
+                    "Fn::FindInMap": [ "AWSAMIRegionMap", { "Ref": "AWS::Region" }, "NETAPPOCCM" ]
                 },
                 "NetworkInterfaces": [
                     {
