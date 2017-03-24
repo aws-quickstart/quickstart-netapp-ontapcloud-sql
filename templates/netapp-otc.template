@@ -46,7 +46,21 @@
         "AUniqueName": {
             "Type": "String",
             "Description": "A unique name to be used to identify the AWS resources deployed as part of this template (i.e. use the StackName)"
-        }
+        },
+		 "QSS3BucketName": {
+			"AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
+			"ConstraintDescription": "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
+			"Default": "quickstart-reference",
+			"Description": "S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
+			"Type": "String"
+		},
+		"QSS3KeyPrefix": { 
+		  "AllowedPattern": "^[0-9a-zA-Z-]+(/[0-9a-zA-Z-]+)*$",
+		  "ConstraintDescription": "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with a forward slash (/), which is automatically appended.",
+		  "Default": "netapp/ontapcloud/sql/latest",
+		  "Description": "S3 key prefix for the Quick Start assets. This prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with a forward slash (/), which is automatically appended.",
+		  "Type": "String"
+		}
     },
 
     "Mappings": {
@@ -96,7 +110,21 @@
         "us-west-2": {
           "NETAPPOCCM": "ami-68e96c08"
         }
-      }
+      },
+	  "AWSInfoRegionMap": {
+            "ap-northeast-1": { "Partition": "aws", "QuickStartS3URL": "https://s3.amazonaws.com" },
+            "ap-northeast-2": { "Partition": "aws", "QuickStartS3URL": "https://s3.amazonaws.com" },
+            "ap-south-1": { "Partition": "aws", "QuickStartS3URL": "https://s3.amazonaws.com" },
+            "ap-southeast-1": { "Partition": "aws", "QuickStartS3URL": "https://s3.amazonaws.com" },
+            "ap-southeast-2": { "Partition": "aws", "QuickStartS3URL": "https://s3.amazonaws.com" },
+            "eu-central-1": { "Partition": "aws", "QuickStartS3URL": "https://s3.amazonaws.com" },
+            "eu-west-1": { "Partition": "aws", "QuickStartS3URL": "https://s3.amazonaws.com" },
+            "sa-east-1": { "Partition": "aws", "QuickStartS3URL": "https://s3.amazonaws.com" },
+            "us-east-1": { "Partition": "aws", "QuickStartS3URL": "https://s3.amazonaws.com" },
+            "us-east-2": { "Partition": "aws", "QuickStartS3URL": "https://s3.amazonaws.com" },
+            "us-west-1": { "Partition": "aws", "QuickStartS3URL": "https://s3.amazonaws.com" },
+            "us-west-2": { "Partition": "aws", "QuickStartS3URL": "https://s3.amazonaws.com" }
+        }
     },
 
     "Resources": {
@@ -279,7 +307,88 @@
             "DependsOn": [
                 "OCCMSecurityGroup", "OCCMInstanceProfile"
             ],
-            "Type": "AWS::EC2::Instance",            
+            "Type": "AWS::EC2::Instance", 
+			"Metadata": {
+				"AWS::CloudFormation::Init": {
+					"config": {
+                        "files": {
+						"/tmp/occm-params.txt": {
+                           "content": {
+								"Fn::Join":	[
+                                        "",
+                                        [
+                                            "name|",
+                                            {
+                                                 "Ref": "AUniqueName" 
+                                            },
+                                            "\n",
+                                            "customer|",
+                                            {
+                                                "Ref": "CompanyName"
+                                            },
+                                            "\n",
+                                            "vpcID|",
+                                            {
+                                                "Ref": "VPCId"
+                                            },
+                                            "\n",
+                                            "subnetID|",
+                                            {
+                                                "Ref": "SubnetId"
+                                            },
+                                            "\n",
+                                            "region|",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            "\n",
+                                            "adminEmail|",
+                                            {
+                                                "Ref": "CloudManagerUserEmail"
+                                            },
+                                            "\n",
+                                            "adminPassword|",
+                                            {
+                                                "Ref": "CloudManagerPassword"
+                                            },
+                                            "\n",
+                                            "svmPassword|",
+                                            {
+                                                "Ref": "CloudManagerPassword"
+                                            },
+                                            "\n"
+                                        ]
+                                    ]
+								},
+								"mode": "000440",
+                                "owner": "root",
+                                "group": "root"
+							},
+						"/tmp/setup_OTC.sh": {
+                            "source": {
+                                "Fn::Join": [
+                                 "",
+                                  [
+                                     "https://",
+                                      {
+                                          "Ref": "QSS3BucketName"
+                                      },
+                                            ".s3.amazonaws.com/",
+                                      {
+                                           "Ref": "QSS3KeyPrefix"
+                                       },
+                                       "/scripts/setup_OTC.sh"
+                                    ]
+                                 ]
+                                },
+                                "mode": "000644",
+                                "owner": "root",
+                                "group": "root"
+                            }
+						}
+					}
+				}
+			},           
             "Properties": {
                 "DisableApiTermination": "FALSE",
                 "ImageId": {
@@ -305,76 +414,39 @@
                                 "sudo -s",
                                 "export PATH=$PATH:/usr/local/aws/bin/",
                                 "easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz",
-                                "# Helper function",
-                                "function waitForAction",
-                                "{",
-                                "  curl http://localhost/occm/api/audit?workingEnvironmentId=${1} -X GET --header 'Content-Type:application/json' --header 'Referer:AWSQS1' --cookie cookies.txt | jq -r .[${3}].status > /tmp/temp.txt",
-                                "  test=`cat /tmp/temp.txt`",
-                                "if [ ${test} = null ] ; then",
-                                    "sleep ${2}",
-                                    "waitForAction ${1} ${2} ${3}",
-                                "fi",
-                                "  while [ ${test} = Received ] || [ ${test} = null ] ; do sleep ${2};curl http://localhost/occm/api/audit?workingEnvironmentId=${1} -X GET --header 'Content-Type:application/json' --header 'Referer:AWSQS1' --cookie cookies.txt | jq -r .[${3}].status > /tmp/temp.txt;test=`cat /tmp/temp.txt`; done",
-                                "if [ ${test} = Failed ] ; then",
-                                "  curl http://localhost/occm/api/audit?workingEnvironmentId=${1} -X GET --header 'Content-Type:application/json' --header 'Referer:AWSQS1' --cookie cookies.txt | jq -r .[${3}] > /tmp/temp.txt",
-                                "  errorMessage=`cat /tmp/temp.txt| jq -r .errorMessage`",
-                                "  actionName=`cat /tmp/temp.txt| jq -r .actionName`",
-                                "  cfn-signal -e 1 -r \"Action: $actionName failed due to: $errorMessage\" --region ${region} ${otcTemplateHandle}",
-                                "  exit 1",
-                                "fi",
-                                "}",
-                                {"Fn::Join": [ "", [ "name=", { "Ref": "AUniqueName" } ] ]},
-                                {"Fn::Join": [ "", [ "customer=", { "Ref": "CompanyName" } ] ]},
-                                {"Fn::Join": [ "", [ "vpcID=", { "Ref": "VPCId" } ] ]},
-                                {"Fn::Join": [ "", [ "subnetID=", { "Ref": "SubnetId" } ] ]},
-                                {"Fn::Join": [ "", [ "region=", { "Ref": "AWS::Region" } ] ]},
-                                {"Fn::Join": [ "", [ "adminEmail=", { "Ref": "CloudManagerUserEmail" } ] ]},
-                                {"Fn::Join": [ "", [ "adminPassword=", { "Ref": "CloudManagerPassword" } ] ]},
-                                {"Fn::Join": [ "", [ "svmPassword=", { "Ref": "CloudManagerPassword" } ] ]},
+								{"Fn::Join": [ "", [ "region=", { "Ref": "AWS::Region" } ] ]},
                                 {"Fn::Join": [ "", [ "otcTemplateHandle=", { "Fn::Base64": { "Ref": "OTCCompleteHandle" } } ] ]},
                                 {"Fn::Join": [ "", [ "otcTemplateHandle2=", { "Fn::Base64": { "Ref": "OTCCompleteHandle2" } } ] ]},
                                 {"Fn::Join": [ "", [ "otcTemplateHandle3=", { "Fn::Base64": { "Ref": "OTCCompleteHandle3" } } ] ]},
+								{"Fn::Join": [ "", [ "stackName=", { "Ref": "AWS::StackName" } ] ]},
+								
                                 "wget -O /usr/bin/jq http://stedolan.github.io/jq/download/linux64/jq",
                                 "sleep 5",
                                 "chmod +x /usr/bin/jq",
-                                "dataAccessCidr=`aws ec2 describe-subnets --region $region --subnet-id $subnetID | jq -r '.Subnets[0].CidrBlock'`",								
-                                "sleep 60",
-                                "## Setup Cloud Manager",
-                                "curl http://localhost/occm/api/occm/setup/init -X POST --header 'Content-Type:application/json' --header 'Referer:AWSQS1' --data '{ \"proxyUrl\": { \"uri\": \"\" }, \"userRequest\":{  \"email\": \"'${adminEmail}'\",\"lastName\": \"admin\", \"firstName\":\"admin\",\"accessKey\": \"nokeys\",\"roleId\": \"Role-1\",\"secretKey\": \"nokeys\",\"password\": \"'${adminPassword}'\"  }, \"site\": \"'${customer}_site'\", \"company\": \"'${customer}'\",\"tenantRequest\": { \"name\": \"'${customer}_tenant'\", \"description\": \"\", \"costCenter\": \"\", \"nssKeys\": {} }}'",
-                                "sleep 40",
-                                "until sudo wget http://localhost/occmui > /dev/null 2>&1; do sudo wget http://localhost > /dev/null 2>&1 ; done",
-                                "sleep 60",
-                                "## Authenticate to Cloud Manager",
-                                "curl http://localhost/occm/api/auth/login --header 'Content-Type:application/json' --header 'Referer:AWSQS1' --data '{\"email\":\"'${adminEmail}'\",\"password\":\"'${adminPassword}'\"}' --cookie-jar cookies.txt",
-                                "sleep 5",
-                                "## Get the Tenant ID so we can create the ONTAP Cloud system in that Cloud Manager Tenant",
-                                "tenantId=`curl http://localhost/occm/api/tenants -X GET --header 'Content-Type:application/json' --header 'Referer:AWSQS1' --cookie cookies.txt | jq -r .[0].publicId`",
-                                "## Create a ONTAP Cloud working env",
-                                "name=$(tr '-' '_' <<< ${name:0:30})",
-                                "curl http://localhost/occm/api/vsa/working-environments -X POST --cookie cookies.txt --header 'Content-Type:application/json' --header 'Referer:AWSQS1' --data '{\"name\":\"'${name}_OTC'\",\"tenantId\":\"'${tenantId}'\",\"region\":\"'${region}'\",\"subnetId\":\"'${subnetID}'\",\"ebsVolumeType\":\"gp2\",\"ebsVolumeSize\": {\"size\": 1, \"unit\": \"TB\"},\"dataEncryptionType\":\"AWS\",\"ontapEncryptionParameters\":null,\"skipSnapshots\": \"true\",\"svmPassword\":\"'${svmPassword}'\",\"vpcId\":\"'${vpcID}'\",\"vsaMetadata\":{\"platformLicense\":null,\"ontapVersion\":\"latest\",\"useLatestVersion\": true,\"licenseType\":\"cot-standard-paygo\",\"instanceType\":\"r4.xlarge\"}}' > /tmp/createVSA.txt",
-                                "sourceVsaPublicId=`cat /tmp/createVSA.txt| jq -r .publicId`",
-                                "if [ ${sourceVsaPublicId} = null ] ; then",
-                                "  message=`cat /tmp/createVSA.txt| jq -r .message`",
-                                "  cfn-signal -e 1 -r \"$message\" --region ${region} ${otcTemplateHandle}",
-                                "  exit 1",
-                                "fi",
-                                "sleep 2",
-                                "## Check SRC VSA",
-                                "waitForAction ${sourceVsaPublicId} 60 1",
-                                "## grab the Cluster managment LIF IP address",
-                                "clusterLif=`curl 'http://localhost/occm/api/vsa/working-environments/'${sourceVsaPublicId}'?fields=clusterProperties' -X GET --header 'Content-Type:application/json' --header 'Referer:AWSQS1' --cookie cookies.txt |jq -r .clusterProperties.lifs |grep \"Cluster Management\" -a2|head -1|cut -f4 -d '\"'`",
-                                "clusterLIF=`echo \"${clusterLif}\"`",
-                                "cfn-signal -d \"${clusterLIF}\" -i ClusterLif --region ${region} ${otcTemplateHandle2}",
-                                "## grab the iSCSI data LIF IP address",
-                                "dataLif=`curl 'http://localhost/occm/api/vsa/working-environments/'${sourceVsaPublicId}'?fields=clusterProperties' -X GET --header 'Content-Type:application/json' --header 'Referer:AWSQS1' --cookie cookies.txt |jq -r .clusterProperties.lifs |grep iscsi -a4|head -1|cut -f4 -d '\"'`",
-                                "iscsiLIF=`echo \"${dataLif}\"`",
-                                "## Signal that the OTC setup is completed",
-                                "cfn-signal -d \"${iscsiLIF}\" -i IscsiLif --region ${region} ${otcTemplateHandle}",
-                                "## grab the NFS and CIFS data LIF IP address",
-                                "dataLif2=`curl 'http://localhost/occm/api/vsa/working-environments/'${sourceVsaPublicId}'?fields=clusterProperties' -X GET --header 'Content-Type:application/json' --header 'Referer:AWSQS1' --cookie cookies.txt |jq -r .clusterProperties.lifs |grep nfs -a4|head -1|cut -f4 -d '\"'`",
-                                "nasLIF=`echo \"${dataLif2}\"`",
-                                "## Signal that the OTC setup is completed",
-                                "cfn-signal -d \"${nasLIF}\" -i NasLif --region ${region} ${otcTemplateHandle3}\n"
+
+                                "cfn-init -v  --stack ${stackName} --resource OCCMInstance --region ${region}",
+
+								"if [ -e /tmp/setup_OTC.sh -a -e /tmp/occm-params.txt ] ; then",
+									"# Call setup_OTC.sh",
+									"chmod a+x /tmp/setup_OTC.sh",
+									"/tmp/setup_OTC.sh /tmp/occm-params.txt",
+									"rm /tmp/occm-params.txt",
+								"else",
+									"cfn-signal -e 1 -r \"Error downloading bootstrap files\" --region ${region} ${otcTemplateHandle}",
+									"rm /tmp/occm-params.txt",
+									"exit 1",
+								"fi",
+
+								"if [ -f /tmp/occmError.txt ]; then",
+									"cfn-signal -e 1 -r \"`cat ${errorFile}`\" --region ${region} ${otcTemplateHandle}",
+									"rm /tmp/occm-params.txt",
+									"exit 1",
+								"else",
+									"cfn-signal -d \"`cat /tmp/clusterLif.txt`\" -i ClusterLif --region ${region} ${otcTemplateHandle2}",
+									"cfn-signal -d \"`cat /tmp/iscsiLif.txt`\" -i IscsiLif --region ${region} ${otcTemplateHandle}",
+									"cfn-signal -d \"`cat /tmp/nasLif.txt`\" -i NasLif --region ${region} ${otcTemplateHandle3}\n",
+									"rm /tmp/occm-params.txt",
+								"fi"
                             ]
                         ]
                     }

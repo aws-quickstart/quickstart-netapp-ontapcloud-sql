@@ -88,7 +88,6 @@ function Connect-ONTAP([String]$AdminLIF, [String]$iScSILIF, [String]$SVMName,[S
     } 
     catch {
         Write-Output "$($_.exception.message)@ $(Get-Date)"
-        $ErrorActionPreference = "Stop"
 		exit 1
     }
  }
