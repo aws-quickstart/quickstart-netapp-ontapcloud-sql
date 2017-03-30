@@ -1,0 +1,34 @@
+[
+		  {
+              "ParameterKey": "KeyPair",
+              "ParameterValue": "$[alfred_getkeypair]"
+          },
+          {
+              "ParameterKey": "CloudManagerPassword",
+              "ParameterValue": "$[alfred_genpass_32]"
+          },
+          {
+              "ParameterKey": "CloudManagerUserEmail",
+              "ParameterValue": "user@example.com"
+          },
+		  {
+              "ParameterKey": "CompanyName",
+              "ParameterValue": "Example"
+          },
+          {
+              "ParameterKey": "AvailabilityZones",
+              "ParameterValue": "$[alfred_genaz_2]"
+          },
+          {
+              "ParameterKey": "CIDRRange",
+              "ParameterValue": "172.18.0.0"
+          },
+          {
+              "ParameterKey": "RemoteAccessCIDR",
+              "ParameterValue": "172.18.0.0"
+          },
+          {
+              "ParameterKey": "Capacity",
+              "ParameterValue": "100"
+          }
+]
