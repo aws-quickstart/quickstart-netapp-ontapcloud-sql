@@ -89,7 +89,7 @@
     "CompanyName": {
       "Type": "String",
       "MinLength": "4",
-      "Description": "Company name",
+      "Description": "Company name. Should start with alphabetic character and contains only numbers, letters or underscore (_) and up to 35 characters",
       "MaxLength": "35",
       "AllowedPattern": "[a-zA-Z][a-zA-Z0-9_]*",
       "ConstraintDescription": "Must start with alphabetic character and contains only numbers, letters or underscore (_) and up to 35 characters"

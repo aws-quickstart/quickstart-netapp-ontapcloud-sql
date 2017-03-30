@@ -351,11 +351,6 @@
                                             {
                                                 "Ref": "CloudManagerPassword"
                                             },
-                                            "\n",
-                                            "svmPassword|",
-                                            {
-                                                "Ref": "CloudManagerPassword"
-                                            },
                                             "\n"
                                         ]
                                     ]
@@ -364,7 +359,7 @@
                                 "owner": "root",
                                 "group": "root"
 							},
-						"/tmp/setup_OTC.sh": {
+						"/tmp/setup_otc.sh": {
                             "source": {
                                 "Fn::Join": [
                                  "",
@@ -377,7 +372,7 @@
                                       {
                                            "Ref": "QSS3KeyPrefix"
                                        },
-                                       "/scripts/setup_OTC.sh"
+                                       "/scripts/setup_otc.sh"
                                     ]
                                  ]
                                 },
@@ -410,7 +405,7 @@
                         "Fn::Join": [
                             "\n",
                             [
-                                "#!/bin/bash -xe",
+                                "#!/bin/bash -e",
                                 "sudo -s",
                                 "export PATH=$PATH:/usr/local/aws/bin/",
                                 "easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz",
@@ -419,6 +414,8 @@
                                 {"Fn::Join": [ "", [ "otcTemplateHandle2=", { "Fn::Base64": { "Ref": "OTCCompleteHandle2" } } ] ]},
                                 {"Fn::Join": [ "", [ "otcTemplateHandle3=", { "Fn::Base64": { "Ref": "OTCCompleteHandle3" } } ] ]},
 								{"Fn::Join": [ "", [ "stackName=", { "Ref": "AWS::StackName" } ] ]},
+								{"Fn::Join": [ "", [ "paramFile=", "/tmp/occm-params.txt" ]]},
+								{"Fn::Join": [ "", [ "errorFile=",  "/tmp/occmError.txt"] ]},
 								
                                 "wget -O /usr/bin/jq http://stedolan.github.io/jq/download/linux64/jq",
                                 "sleep 5",
@@ -426,27 +423,20 @@
 
                                 "cfn-init -v  --stack ${stackName} --resource OCCMInstance --region ${region}",
 
-								"if [ -e /tmp/setup_OTC.sh -a -e /tmp/occm-params.txt ] ; then",
-									"# Call setup_OTC.sh",
-									"chmod a+x /tmp/setup_OTC.sh",
-									"/tmp/setup_OTC.sh /tmp/occm-params.txt",
-									"rm /tmp/occm-params.txt",
-								"else",
-									"cfn-signal -e 1 -r \"Error downloading bootstrap files\" --region ${region} ${otcTemplateHandle}",
-									"rm /tmp/occm-params.txt",
-									"exit 1",
-								"fi",
-
-								"if [ -f /tmp/occmError.txt ]; then",
-									"cfn-signal -e 1 -r \"`cat ${errorFile}`\" --region ${region} ${otcTemplateHandle}",
-									"rm /tmp/occm-params.txt",
-									"exit 1",
+								"chmod a+x /tmp/setup_otc.sh",
+								"/tmp/setup_otc.sh ${paramFile} &>> /tmp/bootstrap.log",
+								
+								"if [ -f ${errorFile}  ] || [$? -ne \"0\"]; then",
+									"cfn-signal -e $1 -r \"Error executing bootsrap script\" --region ${region} ${otcTemplateHandle}",
 								"else",
 									"cfn-signal -d \"`cat /tmp/clusterLif.txt`\" -i ClusterLif --region ${region} ${otcTemplateHandle2}",
 									"cfn-signal -d \"`cat /tmp/iscsiLif.txt`\" -i IscsiLif --region ${region} ${otcTemplateHandle}",
 									"cfn-signal -d \"`cat /tmp/nasLif.txt`\" -i NasLif --region ${region} ${otcTemplateHandle3}\n",
-									"rm /tmp/occm-params.txt",
-								"fi"
+								"fi",
+								
+								"sed -i \"s/$(grep 'adminPassword' ${paramFile} | awk -F'|' '{print $2}')/xxxxx/g\" /tmp/bootstrap.log",
+								"rm ${paramFile}"
+								
                             ]
                         ]
                     }
