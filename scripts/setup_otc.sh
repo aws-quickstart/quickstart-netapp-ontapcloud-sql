@@ -8,7 +8,7 @@ function exportParams() {
 	region=`grep 'region' ${PARAMS_FILE} | awk -F'|' '{print $2}' | sed -e 's/^ *//g;s/ *$//g'`
 	adminEmail=`grep 'adminEmail' ${PARAMS_FILE} | awk -F'|' '{print $2}' | sed -e 's/^ *//g;s/ *$//g'`
 	adminPassword=`grep 'adminPassword' ${PARAMS_FILE} | awk -F'|' '{print $2}' | sed -e 's/^ *//g;s/ *$//g'`
-	svmPassword=`grep 'svmPassword' ${PARAMS_FILE} | awk -F'|' '{print $2}' | sed -e 's/^ *//g;s/ *$//g'`
+	svmPassword=${adminPassword}
 }
 
 if [ $# -ne 1 ]; then

@@ -9,7 +9,7 @@
                         "default": "Network Configuration"
                     },
                     "Parameters": [
-                        "CIDRRange",
+                        "VPCCIDR",
                         "RemoteAccessCIDR"
                     ]
                 },
@@ -50,14 +50,14 @@
                 }
             ],
             "ParameterLabels": {
-                "CIDRRange": {
-                    "default": "CIDR Range"
+                "VPCCIDR": {
+                    "default": "VPC CIDR"
                 },
                 "RemoteAccessCIDR": {
                     "default": "Remote Access CIDR"
                 },
                 "KeyPair": {
-                    "default": "Key Pair"
+                    "default": "Key Name"
                 },
                 "CompanyName": {
                     "default": "Company Name"
@@ -67,6 +67,9 @@
                 },
                 "CloudManagerPassword": {
                     "default": "Cloud Manager Password"
+                },
+                "Capacity": {
+                    "default": "DB Size"
                 },
                 "QSS3BucketName": {
                     "default": "Quick Start S3 Bucket Name"
@@ -79,8 +82,8 @@
     },
   "Parameters": { 
 
-    "CIDRRange": {
-      "Description": "VPCCIDR Range (will be created as a /16 block)",
+    "VPCCIDR": {
+      "Description": "VPC CIDR Range (will be created as a /16 block)",
       "Type": "String",
       "Default": "172.18.0.0",
       "AllowedValues": [ "172.18.0.0", "172.19.0.0", "172.20.0.0", "172.21.0.0", "172.22.0.0", "172.23.0.0" ]
@@ -89,7 +92,7 @@
     "CompanyName": {
       "Type": "String",
       "MinLength": "4",
-      "Description": "Company name",
+      "Description": "Company name. Should start with alphabetic character and contains only numbers, letters or underscore (_) and up to 35 characters",
       "MaxLength": "35",
       "AllowedPattern": "[a-zA-Z][a-zA-Z0-9_]*",
       "ConstraintDescription": "Must start with alphabetic character and contains only numbers, letters or underscore (_) and up to 35 characters"
@@ -120,11 +123,11 @@
     },
     "Capacity": {
       "Type": "Number",
-      "Description": "Capacity required for the SQL Database (up to 2000 GB)",
+      "Description": "Capacity required for the SQL Database (up to 2000 GiB)",
       "MinValue": "100",
       "MaxValue": "2000",
       "Default": "100",
-      "ConstraintDescription": "Database size limit up to 2000 GB"
+      "ConstraintDescription": "Database size limit up to 2000 GiB"
     },
     "QSS3BucketName": {
       "AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
@@ -221,8 +224,8 @@
                     ]
                 },
                 "Parameters": {
-                    "CIDRRange": {
-                        "Ref": "CIDRRange"
+                    "VPCCIDR": {
+                        "Ref": "VPCCIDR"
                     }
                 }
             }
@@ -264,13 +267,13 @@
                     "VPCId": {
                         "Fn::GetAtt": [
                             "VPC",
-                            "Outputs.outputVPCID"
+                            "Outputs.VPCID"
                         ]
                     },
                     "SubnetId": {
                         "Fn::GetAtt": [
                             "VPC",
-                            "Outputs.outputPublicSubnet"
+                            "Outputs.PublicSubnet"
                         ]
                     },
                     "RemoteAccessCIDR": {

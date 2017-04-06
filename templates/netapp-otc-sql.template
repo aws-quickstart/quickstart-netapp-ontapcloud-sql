@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template deploys and configures a NetApp OnCommand Cloud Manager instance, and a NetApp ONTAP Cloud instance. The ONTAP Cloud system will be fully configured and ready to be a Destination copy for Disaster Recovery replication, or to serve up NFS, CIFS or iSCSI storage targets to your EC2 compute. For this Quick Start the template will also launch a Windows 2012 server with SQL 2014. All applicable iSCSI LUNs will be created on the ONTAP Cloud system and mapped to the Windows Server. Everything into a VPC and public subnet the user specifies. **WARNING** This template creates Amazon EC2 Windows instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
+  "Description": "This template deploys and configures a NetApp OnCommand Cloud Manager instance, and a NetApp ONTAP Cloud instance. The ONTAP Cloud system will be fully configured and ready to be a Destination copy for Disaster Recovery replication, or to serve up NFS, CIFS or iSCSI storage targets to your EC2 compute. For this Quick Start the template will also launch a Windows 2012 server with SQL 2014. All applicable iSCSI LUNs will be created on the ONTAP Cloud system and mapped to the Windows Server. Everything into a VPC and public subnet the user specifies. **WARNING** This template creates Amazon EC2 Windows instance and related resources. You will be billed for the AWS resources used if you create a stack from this template. QS(5036)",
   "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
@@ -9,7 +9,8 @@
                         "default": "Network Configuration"
                     },
                     "Parameters": [
-                        "CIDRRange",
+                        "VPCId",
+                        "SubnetId",
                         "RemoteAccessCIDR"
                     ]
                 },
@@ -51,14 +52,17 @@
                 }
             ],
             "ParameterLabels": {
-                "CIDRRange": {
-                    "default": "CIDR Range"
+                "VPCId": {
+                    "default": "VPC Id"
+                },
+                "SubnetId": {
+                    "default": "Subnet Id"
                 },
                 "RemoteAccessCIDR": {
                     "default": "Remote Access CIDR"
                 },
                 "KeyPair": {
-                    "default": "Key Pair"
+                    "default": "Key Name"
                 },
                 "CompanyName": {
                     "default": "Company Name"
@@ -68,6 +72,9 @@
                 },
                 "CloudManagerPassword": {
                     "default": "Cloud Manager Password"
+                },
+                "Capacity": {
+                    "default": "DB Size"
                 },
                 "QSS3BucketName": {
                     "default": "Quick Start S3 Bucket Name"
@@ -82,19 +89,18 @@
         }
     },
   "Parameters": {
-
     "VPCId": {
       "Type": "AWS::EC2::VPC::Id",
       "Description": "Target VPC for Cloud Manager and ONTAP Cloud"
     },
     "SubnetId": {
       "Type": "AWS::EC2::Subnet::Id",
-      "Description": "SubnetID for Cloud Manager and ONTAP Cloud"
+      "Description": "Public SubnetID for Cloud Manager and ONTAP Cloud"
     },
     "CompanyName": {
       "Type": "String",
       "MinLength": "4",
-      "Description": "Company name",
+      "Description": "Company name. Should start with alphabetic character and contains only numbers, letters or underscore (_) and up to 35 characters",
       "MaxLength": "35",
       "AllowedPattern": "[a-zA-Z][a-zA-Z0-9_]*",
       "ConstraintDescription": "Must start with alphabetic character and contains only numbers, letters or underscore (_) and up to 35 characters"
@@ -125,11 +131,11 @@
     },
     "Capacity": {
       "Type": "Number",
-      "Description": "Capacity required for the SQL Database (up to 2000 GB)",
+      "Description": "Capacity required for the SQL Database (up to 2000 GiB)",
       "MinValue": "100",
       "MaxValue": "2000",
       "Default": "100",
-      "ConstraintDescription": "Database size limit up to 2000 GB"
+      "ConstraintDescription": "Database size limit up to 2000 GiB"
     },
     "QSS3BucketName": {
       "AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
@@ -145,7 +151,7 @@
       "Description": "S3 key prefix for the Quick Start assets. This prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with a forward slash (/), which is automatically appended. Accept default for standard configuration.",
       "Type": "String"
     },
-     "AUniqueName": {
+    "AUniqueName": {
       "Type": "String",
       "Description": "A unique name to be used to identify the AWS resources deployed as part of this template (i.e. use the StackName)"
    }
@@ -203,7 +209,6 @@
         }
     },
   "Resources": {
-
         "OTC": {
             "Type": "AWS::CloudFormation::Stack",
             "Properties": {
