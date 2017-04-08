@@ -100,14 +100,14 @@
     "CompanyName": {
       "Type": "String",
       "MinLength": "4",
-      "Description": "Company name. Should start with alphabetic character and contains only numbers, letters or underscore (_) and up to 35 characters",
+      "Description": "Company name. Should start with alphabetic character and contains only numbers, letters or underscore (_) with minimum 4 and up to 35 characters",
       "MaxLength": "35",
       "AllowedPattern": "[a-zA-Z][a-zA-Z0-9_]*",
-      "ConstraintDescription": "Must start with alphabetic character and contains only numbers, letters or underscore (_) and up to 35 characters"
+      "ConstraintDescription": "Must start with alphabetic character and contains only numbers, letters or underscore (_) with minimum 4 and up to 35 characters"
     },
     "KeyPair": {
       "Type": "AWS::EC2::KeyPair::KeyName",
-      "Description": "CloudManager instance will be launched with this KeyPair"
+      "Description": "Key Name for the CloudManager instance"
     },
     "CloudManagerUserEmail": {
       "Type": "String",
@@ -115,11 +115,11 @@
     },
     "CloudManagerPassword": {
       "Type": "String",
-      "Description": "Password will be used to login to Cloud Manager and ONTAP Cloud",
+      "Description": "Password will be used to login to Cloud Manager and ONTAP Cloud. Must be of length between 6-20.",
       "NoEcho": "true",
-      "MinLength": "4",
+      "MinLength": "6",
       "MaxLength": "20",
-      "ConstraintDescription": "Password Min length is 4 and max length is 20"
+      "ConstraintDescription": "Password Min length is 6 and max length is 20"
     },
     "RemoteAccessCIDR": {
       "Description": "CloudManager and SQL Server access will be allowed from this CIDR range (example for full access: 0.0.0.0/0)",
@@ -153,7 +153,7 @@
     },
     "AUniqueName": {
       "Type": "String",
-      "Description": "A unique name to be used to identify the AWS resources deployed as part of this template (i.e. use the StackName)"
+      "Description": "A unique name to be used to identify the AWS resources deployed as part of this template (e.g. use the StackName)"
    }
   },
   "Mappings": {

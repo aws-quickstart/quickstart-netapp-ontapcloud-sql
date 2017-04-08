@@ -37,6 +37,10 @@ fi
 
 export PATH=$PATH:/usr/local/aws/bin/
 
+wget -O /usr/bin/jq http://stedolan.github.io/jq/download/linux64/jq
+sleep 5
+chmod +x /usr/bin/jq
+
 function waitForAction
 {
   curl http://localhost/occm/api/audit?workingEnvironmentId=${1} -X GET --header 'Content-Type:application/json' --header 'Referer:AWSQS1' --cookie cookies.txt | jq -r .[${3}].status > /tmp/temp.txt
@@ -88,3 +92,7 @@ echo "${dataLif}" > /tmp/iscsiLif.txt
 ## grab the NFS and CIFS data LIF IP address
 dataLif2=`curl 'http://localhost/occm/api/vsa/working-environments/'${sourceVsaPublicId}'?fields=clusterProperties' -X GET --header 'Content-Type:application/json' --header 'Referer:AWSQS1' --cookie cookies.txt |jq -r .clusterProperties.lifs |grep nfs -a4|head -1|cut -f4 -d '"'`
 echo "${dataLif2}" > /tmp/nasLif.txt
+
+# Remove passwords from files
+sed -i s/${adminPassword}/xxxxx/g /var/log/cloud-init.log
+sed -i s/${svmPassword}/xxxxx/g /var/log/cloud-init.log

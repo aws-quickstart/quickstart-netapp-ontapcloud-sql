@@ -416,17 +416,15 @@
 								{"Fn::Join": [ "", [ "paramFile=", "/tmp/occm-params.txt" ]]},
  								{"Fn::Join": [ "", [ "errorFile=",  "/tmp/occmError.txt"] ]},
  
-                                "wget -O /usr/bin/jq http://stedolan.github.io/jq/download/linux64/jq",
-                                "sleep 5",
-                                "chmod +x /usr/bin/jq",
-
                                 "cfn-init -v  --stack ${stackName} --resource OCCMInstance --region ${region}",
 
 								"chmod a+x /tmp/setup_otc.sh",
         						"/tmp/setup_otc.sh ${paramFile} &>> /tmp/bootstrap.log",
+              					"result=$?",
+                   				"echo \"Script result=${result}\" ", 
               
-              					"if [ -f ${errorFile}  ] || [$? -ne \"0\"]; then",
-                   					"cfn-signal -e $1 -r \"Error executing bootsrap script\" --region ${region} ${otcTemplateHandle}",
+              					"if [ -f ${errorFile}  ] || [ ${result} -ne \"0\" ]; then",
+                   					"cfn-signal -e 1 -r \"Error executing bootsrap script\" --region ${region} ${otcTemplateHandle}",
 								"else",
 									"cfn-signal -d \"`cat /tmp/clusterLif.txt`\" -i ClusterLif --region ${region} ${otcTemplateHandle2}",
 									"cfn-signal -d \"`cat /tmp/iscsiLif.txt`\" -i IscsiLif --region ${region} ${otcTemplateHandle}",

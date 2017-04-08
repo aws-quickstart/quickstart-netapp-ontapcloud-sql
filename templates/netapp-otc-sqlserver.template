@@ -27,7 +27,7 @@
      },
 
 	"SourceCidrForRemoteManagement" : {
-      "Description" : "IP Cidr from which you are likely to connect (RDP, HTTP, etc.) into the instances. You can add rules later by modifying the created security groups e.g. 54.32.98.160/32",
+      "Description" : "IP CIDR from which you are likely to connect (RDP, HTTP, etc.) into the instances. You can add rules later by modifying the created security groups e.g. 54.32.98.160/32",
 	    "Type" : "String",
       "MinLength" : "9",
       "MaxLength" : "18",
@@ -50,7 +50,7 @@
 		"Type": "String"
 	 },
 	"Capacity": {
-		"Description": "Initial storage capacity",
+		"Description": "Initial storage capacity (in GiB)",
 		"Type": "Number"
 	 },
 	 "AUniqueName": {
