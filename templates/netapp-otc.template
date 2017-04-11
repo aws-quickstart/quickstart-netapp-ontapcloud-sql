@@ -310,7 +310,7 @@
 			"Metadata": {
 				"AWS::CloudFormation::Init": {
 					"config": {
-                        "files": {
+       					"files": {
 						"/tmp/occm-params.txt": {
                            "content": {
 								"Fn::Join":	[
@@ -375,7 +375,7 @@
                                     ]
                                  ]
                                 },
-                                "mode": "000644",
+                                "mode": "000774",
                                 "owner": "root",
                                 "group": "root"
                             }
@@ -405,7 +405,7 @@
                             "\n",
                             [
                                 "#!/bin/bash -e",
-                                "sudo -s",
+                                
                                 "export PATH=$PATH:/usr/local/aws/bin/",
                                 "easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz",
 								{"Fn::Join": [ "", [ "region=", { "Ref": "AWS::Region" } ] ]},
@@ -418,8 +418,7 @@
  
                                 "cfn-init -v  --stack ${stackName} --resource OCCMInstance --region ${region}",
 
-								"chmod a+x /tmp/setup_otc.sh",
-        						"/tmp/setup_otc.sh ${paramFile} &>> /tmp/bootstrap.log",
+								"/tmp/setup_otc.sh ${paramFile} &>> /tmp/bootstrap.log",
               					"result=$?",
                    				"echo \"Script result=${result}\" ", 
               
