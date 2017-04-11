@@ -20,10 +20,6 @@
               "ParameterValue": "$[alfred_genaz_2]"
           },
           {
-              "ParameterKey": "CIDRRange",
-              "ParameterValue": "172.18.0.0"
-          },
-          {
               "ParameterKey": "RemoteAccessCIDR",
               "ParameterValue": "172.18.0.0"
           },
