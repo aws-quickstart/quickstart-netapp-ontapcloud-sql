@@ -27,7 +27,7 @@
                         "default": "ONTAP Cloud General Configuration"
                     },
                     "Parameters": [
-                        "AUniqueName",
+                        "UniqueResourceId",
                         "CompanyName",
                         "CloudManagerUserEmail",
                         "CloudManagerPassword"
@@ -82,8 +82,8 @@
                 "QSS3KeyPrefix": {
                     "default": "Quick Start S3 Key Prefix"
                 },
-                "AUniqueName": {
-                    "default": "A Unique Name"
+                "UniqueResourceId": {
+                    "default": "Unique Resource Identifier"
                 }
             }
         }
@@ -115,11 +115,11 @@
     },
     "CloudManagerPassword": {
       "Type": "String",
-      "Description": "Password will be used to login to Cloud Manager and ONTAP Cloud. Must be of length between 6-20.",
+      "Description": "Password will be used to login to Cloud Manager and ONTAP Cloud. Must be of length between 8-20.",
       "NoEcho": "true",
-      "MinLength": "6",
+      "MinLength": "8",
       "MaxLength": "20",
-      "ConstraintDescription": "Password Min length is 6 and max length is 20"
+      "ConstraintDescription": "Password Min length is 8 and max length is 20"
     },
     "RemoteAccessCIDR": {
       "Description": "CloudManager and SQL Server access will be allowed from this CIDR range (example for full access: 0.0.0.0/0)",
@@ -151,9 +151,13 @@
       "Description": "S3 key prefix for the Quick Start assets. This prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with a forward slash (/), which is automatically appended. Accept default for standard configuration.",
       "Type": "String"
     },
-    "AUniqueName": {
+    "UniqueResourceId": {
       "Type": "String",
-      "Description": "A unique name to be used to identify the AWS resources deployed as part of this template (e.g. use the StackName)"
+      "Description": "A unique name to be used to identify the AWS resources deployed as part of this template.",
+      "Default": "NetApp-ONTAP-Cloud",
+      "MinLength" : "10", 
+      "MaxLength": "40",
+      "ConstraintDescription": "Must be of length betweeen 10 and 40 chars."
    }
   },
   "Mappings": {
@@ -257,8 +261,8 @@
                     "CloudManagerPassword": {
                         "Ref": "CloudManagerPassword"
                     },
-                    "AUniqueName": {
-                        "Ref": "AWS::StackName"
+                    "UniqueResourceId": {
+                        "Ref": "UniqueResourceId"
                     },
 					"QSS3BucketName" : { 
 						"Ref" : "QSS3BucketName" 
@@ -333,8 +337,8 @@
 					"Capacity": {
                         "Ref": "Capacity"
                     },
-					"AUniqueName": {
-                        "Ref": "AWS::StackName"
+					"UniqueResourceId": {
+                        "Ref": "UniqueResourceId"
                     },
 					"QSS3BucketName" : { 
 						"Ref" : "QSS3BucketName" 

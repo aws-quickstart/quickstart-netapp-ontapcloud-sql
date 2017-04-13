@@ -53,10 +53,14 @@
 		"Description": "Initial storage capacity (in GiB)",
 		"Type": "Number"
 	 },
-	 "AUniqueName": {
-      "Type": "String",
-      "Description": "A unique name to be used to identify the AWS resources deployed as part of this template (i.e. use the StackName)"
-   },
+	 "UniqueResourceId": {
+	      "Type": "String",
+	      "Description": "A unique name to be used to identify the AWS resources deployed as part of this template.",
+	      "Default": "NetApp-ONTAP-Cloud",
+	      "MinLength" : "10", 
+	      "MaxLength": "40",
+	      "ConstraintDescription": "Must be of length betweeen 10 and 40 chars."
+   	},
 	 "QSS3BucketName": {
 			"AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
 			"ConstraintDescription": "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
@@ -301,7 +305,7 @@
         "Tags": [
           {
             "Key": "Name",
-			"Value": {"Fn::Join": [ "", [ { "Ref": "AUniqueName" }, "_SQLServer2014" ] ]}
+			"Value": {"Fn::Join": [ "", [ { "Ref": "UniqueResourceId" }, "_SQLServer2014" ] ]}
           },
           {
 			"Key": "CloudFormation Stack",

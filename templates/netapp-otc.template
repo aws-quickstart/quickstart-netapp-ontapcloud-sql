@@ -42,10 +42,14 @@
             "AllowedPattern" : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
             "ConstraintDescription" : "Must be a valid CIDR range of the form x.x.x.x/x."
         },
-        "AUniqueName": {
-            "Type": "String",
-            "Description": "A unique name to be used to identify the AWS resources deployed as part of this template (i.e. use the StackName)"
-        },
+        "UniqueResourceId": {
+	      "Type": "String",
+	      "Description": "A unique name to be used to identify the AWS resources deployed as part of this template.",
+	      "Default": "NetApp-ONTAP-Cloud",
+	      "MinLength" : "10", 
+	      "MaxLength": "40",
+	      "ConstraintDescription": "Must be of length betweeen 10 and 40 chars."
+	   },
 		 "QSS3BucketName": {
 			"AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
 			"ConstraintDescription": "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
@@ -225,7 +229,7 @@
                         }
                     ]
                 },
-                "PolicyName": {"Fn::Join": [ "", [ { "Ref": "AUniqueName" }, "-OCCMPolicy" ] ]}
+                "PolicyName": {"Fn::Join": [ "", [ { "Ref": "UniqueResourceId" }, "-OCCMPolicy" ] ]}
             }]
           },
           "Type": "AWS::IAM::Role"
@@ -254,7 +258,7 @@
                 "Tags": [
                     {
                         "Key": "Name",
-                        "Value": {"Fn::Join": [ "", [ { "Ref": "AUniqueName" }, "-SG" ] ]}
+                        "Value": {"Fn::Join": [ "", [ { "Ref": "UniqueResourceId" }, "-SG" ] ]}
                     }
                 ]
             }
@@ -318,7 +322,7 @@
                                         [
                                             "name|",
                                             {
-                                                 "Ref": "AUniqueName" 
+                                                 "Ref": "UniqueResourceId" 
                                             },
                                             "\n",
                                             "customer|",
@@ -439,7 +443,7 @@
                 "Tags": [
                     {
                         "Key": "Name",
-                        "Value": {"Fn::Join": [ "", [ { "Ref": "AUniqueName" }, "_CloudManager" ] ]}
+                        "Value": {"Fn::Join": [ "", [ { "Ref": "UniqueResourceId" }, "_CloudManager" ] ]}
                     },
                     {
                         "Key": "CloudFormation Stack",
@@ -464,7 +468,7 @@
             "Description" : "CloudManager URL"
         },
         "ONTAPCloudSvmName" : {
-            "Value" : {"Fn::Join": [ "", [ "svm_", {"Fn::Join": [ "", [ { "Ref": "AUniqueName" }, "_OTC" ] ]} ] ]},
+            "Value" : {"Fn::Join": [ "", [ "svm_", {"Fn::Join": [ "", [ { "Ref": "UniqueResourceId" }, "_OTC" ] ]} ] ]},
             "Description" : "ONTAP Cloud SVM Name"
         },
         "IscsiDataLif" : {

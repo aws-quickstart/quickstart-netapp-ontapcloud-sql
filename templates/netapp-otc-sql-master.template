@@ -107,11 +107,11 @@
     },
     "CloudManagerPassword": {
       "Type": "String",
-      "Description": "Password will be used to login to Cloud Manager and ONTAP Cloud. Must be of length between 6-20.",
+      "Description": "Password will be used to login to Cloud Manager and ONTAP Cloud. Must be of length between 8-20.",
       "NoEcho": "true",
-      "MinLength": "6",
+      "MinLength": "8",
       "MaxLength": "20",
-      "ConstraintDescription": "Password Min length is 6 and max length is 20"
+      "ConstraintDescription": "Password Min length is 8 and max length is 20"
     },
     "RemoteAccessCIDR": {
       "Description": "CloudManager and SQL Server access will be allowed from this CIDR range (example for full access: 0.0.0.0/0)",
@@ -288,7 +288,7 @@
                     "Capacity": {
                         "Ref": "Capacity"
                     },
-                    "AUniqueName": {
+                    "UniqueResourceId": {
                         "Ref": "AWS::StackName"
                     },
 					"QSS3BucketName" : { 
