@@ -22,6 +22,3 @@ tests:
   quickstart-netapp-ontapcloud-sqlt1:
     parameter_input: netapp-otc-sql-master-parameter.json
     template_file: netapp-otc-sql-master.template
-  quickstart-netapp-ontapcloud-sqlt2:
-    parameter_input: netapp-otc-sql-master-parameter.json
-    template_file: netapp-otc-sql.template
