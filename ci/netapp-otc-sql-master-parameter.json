@@ -16,10 +16,6 @@
               "ParameterValue": "Example"
           },
           {
-              "ParameterKey": "AvailabilityZones",
-              "ParameterValue": "$[alfred_genaz_2]"
-          },
-          {
               "ParameterKey": "RemoteAccessCIDR",
               "ParameterValue": "172.18.0.0"
           },
