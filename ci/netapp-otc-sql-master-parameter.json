@@ -17,7 +17,7 @@
           },
           {
               "ParameterKey": "RemoteAccessCIDR",
-              "ParameterValue": "172.18.0.0"
+              "ParameterValue": "172.18.0.0/0"
           },
           {
               "ParameterKey": "Capacity",
