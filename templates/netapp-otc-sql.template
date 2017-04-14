@@ -1,7 +1,7 @@
 {
-  "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template deploys and configures a NetApp OnCommand Cloud Manager instance, and a NetApp ONTAP Cloud instance. The ONTAP Cloud system will be fully configured and ready to be a Destination copy for Disaster Recovery replication, or to serve up NFS, CIFS or iSCSI storage targets to your EC2 compute. For this Quick Start the template will also launch a Windows 2012 server with SQL 2014. All applicable iSCSI LUNs will be created on the ONTAP Cloud system and mapped to the Windows Server. Everything into a VPC and public subnet the user specifies. **WARNING** This template creates Amazon EC2 Windows instance and related resources. You will be billed for the AWS resources used if you create a stack from this template. QS(5036)",
-  "Metadata": {
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "This template deploys and configures a NetApp OnCommand Cloud Manager instance, and a NetApp ONTAP Cloud instance. The ONTAP Cloud system will be fully configured and ready to be a Destination copy for Disaster Recovery replication, or to serve up NFS, CIFS or iSCSI storage targets to your EC2 compute. For this Quick Start the template will also launch a Windows 2012 server with SQL 2014. All applicable iSCSI LUNs will be created on the ONTAP Cloud system and mapped to the Windows Server. Everything into a VPC and public subnet the user specifies. **WARNING** This template creates Amazon EC2 Windows instance and related resources. You will be billed for the AWS resources used if you create a stack from this template. QS(5036)",
+    "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
                 {
@@ -52,29 +52,20 @@
                 }
             ],
             "ParameterLabels": {
-                "VPCId": {
-                    "default": "VPC Id"
-                },
-                "SubnetId": {
-                    "default": "Subnet Id"
-                },
-                "RemoteAccessCIDR": {
-                    "default": "Remote Access CIDR"
-                },
-                "KeyPair": {
-                    "default": "Key Name"
-                },
-                "CompanyName": {
-                    "default": "Company Name"
-                },
-                "CloudManagerUserEmail": {
-                    "default": "Cloud Manager User Email"
+                "Capacity": {
+                    "default": "DB Size"
                 },
                 "CloudManagerPassword": {
                     "default": "Cloud Manager Password"
                 },
-                "Capacity": {
-                    "default": "DB Size"
+                "CloudManagerUserEmail": {
+                    "default": "Cloud Manager User Email"
+                },
+                "CompanyName": {
+                    "default": "Company Name"
+                },
+                "KeyPair": {
+                    "default": "Key Name"
                 },
                 "QSS3BucketName": {
                     "default": "Quick Start S3 Bucket Name"
@@ -82,85 +73,94 @@
                 "QSS3KeyPrefix": {
                     "default": "Quick Start S3 Key Prefix"
                 },
+                "RemoteAccessCIDR": {
+                    "default": "Remote Access CIDR"
+                },
+                "SubnetId": {
+                    "default": "Subnet Id"
+                },
                 "UniqueResourceId": {
                     "default": "Unique Resource Identifier"
+                },
+                "VPCId": {
+                    "default": "VPC Id"
                 }
             }
         }
     },
-  "Parameters": {
-    "VPCId": {
-      "Type": "AWS::EC2::VPC::Id",
-      "Description": "Target VPC for Cloud Manager and ONTAP Cloud"
+    "Parameters": {
+        "Capacity": {
+            "ConstraintDescription": "Database size limit up to 2000 GiB",
+            "Default": "100",
+            "Description": "Capacity required for the SQL Database (up to 2000 GiB)",
+            "MaxValue": "2000",
+            "MinValue": "100",
+            "Type": "Number"
+        },
+        "CloudManagerPassword": {
+            "ConstraintDescription": "Password Min length is 8 and max length is 20",
+            "Description": "Password will be used to login to Cloud Manager and ONTAP Cloud. Must be of length between 8-20.",
+            "MaxLength": "20",
+            "MinLength": "8",
+            "NoEcho": "true",
+            "Type": "String"
+        },
+        "CloudManagerUserEmail": {
+            "Description": "Email address will be used to login to Cloud Manager",
+            "Type": "String"
+        },
+        "CompanyName": {
+            "AllowedPattern": "[a-zA-Z][a-zA-Z0-9_]*",
+            "ConstraintDescription": "Must start with alphabetic character and contains only numbers, letters or underscore (_) with minimum 4 and up to 35 characters",
+            "Description": "Company name. Should start with alphabetic character and contains only numbers, letters or underscore (_) with minimum 4 and up to 35 characters",
+            "MaxLength": "35",
+            "MinLength": "4",
+            "Type": "String"
+        },
+        "KeyPair": {
+            "Description": "Key Name for the CloudManager instance",
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        },
+        "QSS3BucketName": {
+            "AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
+            "ConstraintDescription": "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
+            "Default": "quickstart-reference",
+            "Description": "S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-). Accept default for a bucket already configured.",
+            "Type": "String"
+        },
+        "QSS3KeyPrefix": {
+            "AllowedPattern": "^[0-9a-zA-Z-]+(/[0-9a-zA-Z-]+)*$",
+            "ConstraintDescription": "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with a forward slash (/), which is automatically appended.",
+            "Default": "netapp/ontapcloud/sql/latest",
+            "Description": "S3 key prefix for the Quick Start assets. This prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with a forward slash (/), which is automatically appended. Accept default for standard configuration.",
+            "Type": "String"
+        },
+        "RemoteAccessCIDR": {
+            "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+            "ConstraintDescription": "Must be a valid CIDR range of the form x.x.x.x/x.",
+            "Description": "CloudManager and SQL Server access will be allowed from this CIDR range (example for full access: 0.0.0.0/0)",
+            "MaxLength": "18",
+            "MinLength": "9",
+            "Type": "String"
+        },
+        "SubnetId": {
+            "Description": "Public SubnetID for Cloud Manager and ONTAP Cloud",
+            "Type": "AWS::EC2::Subnet::Id"
+        },
+        "UniqueResourceId": {
+            "ConstraintDescription": "Must be of length betweeen 10 and 40 chars.",
+            "Default": "NetApp-ONTAP-Cloud",
+            "Description": "A unique name to be used to identify the AWS resources deployed as part of this template.",
+            "MaxLength": "40",
+            "MinLength": "10",
+            "Type": "String"
+        },
+        "VPCId": {
+            "Description": "Target VPC for Cloud Manager and ONTAP Cloud",
+            "Type": "AWS::EC2::VPC::Id"
+        }
     },
-    "SubnetId": {
-      "Type": "AWS::EC2::Subnet::Id",
-      "Description": "Public SubnetID for Cloud Manager and ONTAP Cloud"
-    },
-    "CompanyName": {
-      "Type": "String",
-      "MinLength": "4",
-      "Description": "Company name. Should start with alphabetic character and contains only numbers, letters or underscore (_) with minimum 4 and up to 35 characters",
-      "MaxLength": "35",
-      "AllowedPattern": "[a-zA-Z][a-zA-Z0-9_]*",
-      "ConstraintDescription": "Must start with alphabetic character and contains only numbers, letters or underscore (_) with minimum 4 and up to 35 characters"
-    },
-    "KeyPair": {
-      "Type": "AWS::EC2::KeyPair::KeyName",
-      "Description": "Key Name for the CloudManager instance"
-    },
-    "CloudManagerUserEmail": {
-      "Type": "String",
-      "Description": "Email address will be used to login to Cloud Manager"
-    },
-    "CloudManagerPassword": {
-      "Type": "String",
-      "Description": "Password will be used to login to Cloud Manager and ONTAP Cloud. Must be of length between 8-20.",
-      "NoEcho": "true",
-      "MinLength": "8",
-      "MaxLength": "20",
-      "ConstraintDescription": "Password Min length is 8 and max length is 20"
-    },
-    "RemoteAccessCIDR": {
-      "Description": "CloudManager and SQL Server access will be allowed from this CIDR range (example for full access: 0.0.0.0/0)",
-      "Type": "String",
-      "MinLength": "9",
-      "MaxLength": "18",
-      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
-      "ConstraintDescription": "Must be a valid CIDR range of the form x.x.x.x/x."
-    },
-    "Capacity": {
-      "Type": "Number",
-      "Description": "Capacity required for the SQL Database (up to 2000 GiB)",
-      "MinValue": "100",
-      "MaxValue": "2000",
-      "Default": "100",
-      "ConstraintDescription": "Database size limit up to 2000 GiB"
-    },
-    "QSS3BucketName": {
-      "AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
-      "ConstraintDescription": "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
-      "Default": "quickstart-reference",
-      "Description": "S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-). Accept default for a bucket already configured.",
-      "Type": "String"
-    },
-    "QSS3KeyPrefix": { 
-      "AllowedPattern": "^[0-9a-zA-Z-]+(/[0-9a-zA-Z-]+)*$",
-      "ConstraintDescription": "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with a forward slash (/), which is automatically appended.",
-      "Default": "netapp/ontapcloud/sql/latest",
-      "Description": "S3 key prefix for the Quick Start assets. This prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with a forward slash (/), which is automatically appended. Accept default for standard configuration.",
-      "Type": "String"
-    },
-    "UniqueResourceId": {
-      "Type": "String",
-      "Description": "A unique name to be used to identify the AWS resources deployed as part of this template.",
-      "Default": "NetApp-ONTAP-Cloud",
-      "MinLength" : "10", 
-      "MaxLength": "40",
-      "ConstraintDescription": "Must be of length betweeen 10 and 40 chars."
-   }
-  },
-  "Mappings": {
+    "Mappings": {
         "AWSInfoRegionMap": {
             "ap-northeast-1": {
                 "Partition": "aws",
@@ -212,7 +212,7 @@
             }
         }
     },
-  "Resources": {
+    "Resources": {
         "OTC": {
             "Type": "AWS::CloudFormation::Stack",
             "Properties": {
@@ -240,128 +240,143 @@
                     ]
                 },
                 "Parameters": {
+                    "CloudManagerPassword": {
+                        "Ref": "CloudManagerPassword"
+                    },
+                    "CloudManagerUserEmail": {
+                        "Ref": "CloudManagerUserEmail"
+                    },
                     "CompanyName": {
                         "Ref": "CompanyName"
                     },
                     "KeyPair": {
                         "Ref": "KeyPair"
                     },
-                    "VPCId": {
-                        "Ref": "VPCId"
+                    "QSS3BucketName": {
+                        "Ref": "QSS3BucketName"
                     },
-                    "SubnetId": {
-                        "Ref": "SubnetId"
+                    "QSS3KeyPrefix": {
+                        "Ref": "QSS3KeyPrefix"
                     },
                     "RemoteAccessCIDR": {
                         "Ref": "RemoteAccessCIDR"
                     },
-                    "CloudManagerUserEmail": {
-                        "Ref": "CloudManagerUserEmail"
-                    },
-                    "CloudManagerPassword": {
-                        "Ref": "CloudManagerPassword"
+                    "SubnetId": {
+                        "Ref": "SubnetId"
                     },
                     "UniqueResourceId": {
                         "Ref": "UniqueResourceId"
                     },
-					"QSS3BucketName" : { 
-						"Ref" : "QSS3BucketName" 
-					},
-					"QSS3KeyPrefix" : { 
-						"Ref" : "QSS3KeyPrefix" 
-					}
+                    "VPCId": {
+                        "Ref": "VPCId"
+                    }
                 }
             }
         },
-		"SQL" :{
-			"Type": "AWS::CloudFormation::Stack",
-			"DependsOn": "OTC",
+        "SQL": {
+            "Type": "AWS::CloudFormation::Stack",
+            "DependsOn": "OTC",
             "Properties": {
-                "TemplateURL":  {
-                "Fn::Join": [
-                  "/",
-                  [
-                    {
-                      "Fn::FindInMap": [
-                        "AWSInfoRegionMap",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "QuickStartS3URL"
-                      ]
-                    },
-                    {
-                      "Ref": "QSS3BucketName"
-                    },
-                    {
-                      "Ref": "QSS3KeyPrefix"
-                    },
-                    "templates/netapp-otc-sqlserver.template"
-                  ]
-                ]
-              },
-                "Parameters": {
-                    "KeyName": {
-						"Ref": "KeyPair"
-					},
-					"VPCId": {
-                        "Ref": "VPCId"
-                    },
-                    "SubnetId": {
-                        "Ref": "SubnetId"
-                    },
-                    "SourceCidrForRemoteManagement": {
-                        "Ref": "RemoteAccessCIDR"
-                    },
-					"SvmName": {
-                        "Fn::GetAtt": [
-                            "OTC",
-                            "Outputs.ONTAPCloudSvmName"
+                "TemplateURL": {
+                    "Fn::Join": [
+                        "/",
+                        [
+                            {
+                                "Fn::FindInMap": [
+                                    "AWSInfoRegionMap",
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    "QuickStartS3URL"
+                                ]
+                            },
+                            {
+                                "Ref": "QSS3BucketName"
+                            },
+                            {
+                                "Ref": "QSS3KeyPrefix"
+                            },
+                            "templates/netapp-otc-sqlserver.template"
                         ]
-                    },
-					"SvmPassword": {
-                        "Ref": "CloudManagerPassword"
-                    },
+                    ]
+                },
+                "Parameters": {
                     "AdminNodeLIF": {
                         "Fn::GetAtt": [
                             "OTC",
                             "Outputs.ClusterManagementLif"
                         ]
                     },
-					"iScSILIF": {
-						"Fn::GetAtt": [
+                    "Capacity": {
+                        "Ref": "Capacity"
+                    },
+                    "KeyName": {
+                        "Ref": "KeyPair"
+                    },
+                    "QSS3BucketName": {
+                        "Ref": "QSS3BucketName"
+                    },
+                    "QSS3KeyPrefix": {
+                        "Ref": "QSS3KeyPrefix"
+                    },
+                    "SourceCidrForRemoteManagement": {
+                        "Ref": "RemoteAccessCIDR"
+                    },
+                    "SubnetId": {
+                        "Ref": "SubnetId"
+                    },
+                    "SvmName": {
+                        "Fn::GetAtt": [
+                            "OTC",
+                            "Outputs.ONTAPCloudSvmName"
+                        ]
+                    },
+                    "SvmPassword": {
+                        "Ref": "CloudManagerPassword"
+                    },
+                    "UniqueResourceId": {
+                        "Ref": "UniqueResourceId"
+                    },
+                    "VPCId": {
+                        "Ref": "VPCId"
+                    },
+                    "iScSILIF": {
+                        "Fn::GetAtt": [
                             "OTC",
                             "Outputs.IscsiDataLif"
                         ]
-                    },
-					"Capacity": {
-                        "Ref": "Capacity"
-                    },
-					"UniqueResourceId": {
-                        "Ref": "UniqueResourceId"
-                    },
-					"QSS3BucketName" : { 
-						"Ref" : "QSS3BucketName" 
-					},
-					"QSS3KeyPrefix" : { 
-						"Ref" : "QSS3KeyPrefix" 
-					}
+                    }
                 }
             }
-		}
-    },
-	"Outputs" : {
-		"SQLServerName":{
-			"Description": "SQL Server launched by Quick Start",
-			"Value": { "Fn::GetAtt": [ "SQL", "Outputs.SQLServerName" ] }
-		},
-		"SQLIPAddress": {
-			"Description": "Public IP Address of SQL Server",
-			"Value": { "Fn::GetAtt": [ "SQL", "Outputs.SQLIPAddress" ] }
-		},
-        "CloudManagerURL" : {
-            "Description" : "CloudManager URL",
-            "Value": { "Fn::GetAtt": [ "OTC", "Outputs.CloudManagerURL" ] }
         }
-	}
+    },
+    "Outputs": {
+        "SQLServerName": {
+            "Description": "SQL Server launched by Quick Start",
+            "Value": {
+                "Fn::GetAtt": [
+                    "SQL",
+                    "Outputs.SQLServerName"
+                ]
+            }
+        },
+        "SQLIPAddress": {
+            "Description": "Public IP Address of SQL Server",
+            "Value": {
+                "Fn::GetAtt": [
+                    "SQL",
+                    "Outputs.SQLIPAddress"
+                ]
+            }
+        },
+        "CloudManagerURL": {
+            "Description": "CloudManager URL",
+            "Value": {
+                "Fn::GetAtt": [
+                    "OTC",
+                    "Outputs.CloudManagerURL"
+                ]
+            }
+        }
+    }
 }
