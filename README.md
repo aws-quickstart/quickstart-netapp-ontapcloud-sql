@@ -1,4 +1,4 @@
-#quickstart-netapp-ontapcloud-sql
+# quickstart-netapp-ontapcloud-sql
 
 This Quick Start automatically deploys a Microsoft SQL Server 2014 environment that receives its storage and enterprise-class data management capabilities from a NetApp ONTAP Cloud system running on AWS. The Quick Start uses NetApp OnCommand Cloud Manager to deploy and configure ONTAP Cloud.
 
