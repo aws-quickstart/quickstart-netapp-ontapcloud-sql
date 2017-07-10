@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "ONTAP Cloud Single - Cloud Manager 3.2",
+    "Description": "ONTAP Cloud Single - Cloud Manager 3.3",
     "Parameters": {
         "CloudManagerPassword": {
             "ConstraintDescription": "Password Min length is 4 and max length is 20",
@@ -68,49 +68,49 @@
     "Mappings": {
         "AWSAMIRegionMap": {
             "AMI": {
-                "NETAPPOCCM": "OnCommandCloudManager-3.2.0-Marketplace- 06/02/2017_105843-d9adb18b-c57c-4615-9bb7-a9c64efd69b1-ami-d45094c2.3"
+                "NETAPPOCCM": "OnCommand Cloud Manager 3.3.0 Marketplace- 13/06/2017_125458-d9adb18b-c57c-4615-9bb7-a9c64efd69b1-ami-4a2e0a5c.4"
             },
-            "ap-northeast-1": {
-                "NETAPPOCCM": "ami-21abeb46"
+            "ap-northeast-1": {  
+                "NETAPPOCCM": "ami-8e979ee9" 
             },
             "ap-northeast-2": {
-                "NETAPPOCCM": "ami-1e61b070"
+                "NETAPPOCCM": "ami-2e8d5240" 
             },
             "ap-south-1": {
-                "NETAPPOCCM": "ami-08443567"
+                "NETAPPOCCM": "ami-c2bdc2ad" 
             },
             "ap-southeast-1": {
-                "NETAPPOCCM": "ami-432e9a20"
+                "NETAPPOCCM": "ami-b89c1edb" 
             },
             "ap-southeast-2": {
-                "NETAPPOCCM": "ami-d8aaacbb"
+                "NETAPPOCCM": "ami-cb3322a8" 
             },
             "ca-central-1": {
-                "NETAPPOCCM": "ami-f8b8059c"
+                "NETAPPOCCM": "ami-38e9565c" 
             },
             "eu-central-1": {
-                "NETAPPOCCM": "ami-b7c20ad8"
+                "NETAPPOCCM": "ami-975bfff8" 
             },
             "eu-west-1": {
-                "NETAPPOCCM": "ami-8dd7f2eb"
+                "NETAPPOCCM": "ami-bf9986d9"  
             },
             "eu-west-2": {
-                "NETAPPOCCM": "ami-6f73660b"
+                "NETAPPOCCM": "ami-fba8bf9f" 
             },
             "sa-east-1": {
-                "NETAPPOCCM": "ami-b0c3a7dc"
+                "NETAPPOCCM": "ami-982843f4" 
             },
             "us-east-1": {
-                "NETAPPOCCM": "ami-6c65a27a"
+                "NETAPPOCCM": "ami-392c0a2f" 
             },
             "us-east-2": {
-                "NETAPPOCCM": "ami-4811342d"
+                "NETAPPOCCM": "ami-98a98ffd" 
             },
             "us-west-1": {
-                "NETAPPOCCM": "ami-e63a6686"
+                "NETAPPOCCM": "ami-379ebc57" 
             },
             "us-west-2": {
-                "NETAPPOCCM": "ami-68e96c08"
+                "NETAPPOCCM": "ami-0258537b" 
             }
         },
         "AWSInfoRegionMap": {
