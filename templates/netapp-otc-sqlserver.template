@@ -126,46 +126,46 @@
     "Mappings": {
         "AWSAMIRegionMap": {
             "AMI": {
-                "WS2012R2SQLSTD2014": "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP1_Standard-2017.06.14"
+                "WS2012R2SQLSTD2014": "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP1_Standard-2017.07.13"
             },
             "ap-northeast-1": {
-                "WS2012R2SQLSTD2014": "ami-8e4e46e9"
+                "WS2012R2SQLSTD2014": "ami-f7746e90"
             },
             "ap-northeast-2": {
-                "WS2012R2SQLSTD2014": "ami-58855a36"
+                "WS2012R2SQLSTD2014": "ami-2d17c943"
             },
             "ap-south-1": {
-                "WS2012R2SQLSTD2014": "ami-85b8c7ea"
+                "WS2012R2SQLSTD2014": "ami-e6afd689"
             },
             "ap-southeast-1": {
-                "WS2012R2SQLSTD2014": "ami-bfad2fdc"
+                "WS2012R2SQLSTD2014": "ami-1359ce70"
             },
             "ap-southeast-2": {
-                "WS2012R2SQLSTD2014": "ami-f920319a"
+                "WS2012R2SQLSTD2014": "ami-f68d9095"
             },
             "ca-central-1": {
-                "WS2012R2SQLSTD2014": "ami-bfe956db"
+                "WS2012R2SQLSTD2014": "ami-194bf47d"
             },
             "eu-central-1": {
-                "WS2012R2SQLSTD2014": "ami-423d992d"
+                "WS2012R2SQLSTD2014": "ami-3b1ebd54"
             },
             "eu-west-1": {
-                "WS2012R2SQLSTD2014": "ami-9f5846f9"
+                "WS2012R2SQLSTD2014": "ami-e1b65b98"
             },
             "sa-east-1": {
-                "WS2012R2SQLSTD2014": "ami-fa3e5596"
+                "WS2012R2SQLSTD2014": "ami-a02c58cc"
             },
             "us-east-1": {
-                "WS2012R2SQLSTD2014": "ami-5b94b24d"
+                "WS2012R2SQLSTD2014": "ami-93aaa585"
             },
             "us-east-2": {
-                "WS2012R2SQLSTD2014": "ami-a3b294c6"
+                "WS2012R2SQLSTD2014": "ami-1da68778"
             },
             "us-west-1": {
-                "WS2012R2SQLSTD2014": "ami-96674af6"
+                "WS2012R2SQLSTD2014": "ami-2b1d334b"
             },
             "us-west-2": {
-                "WS2012R2SQLSTD2014": "ami-b80d06c1"
+                "WS2012R2SQLSTD2014": "ami-51c9d528"
             }
         },
         "AWSInfoRegionMap": {
