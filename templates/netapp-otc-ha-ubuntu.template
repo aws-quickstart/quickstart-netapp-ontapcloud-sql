@@ -1,0 +1,182 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description" : "This template creates an EC2 instance running Ubuntu with a NetApp ONTAP Cloud NFS volume mounted. **WARNING** This template creates EC2 instance and related resources. You will be billed for the AWS resources used if you create a stack from this template. Also, you are solely responsible for complying with the license terms for the software downloaded and installed by this template. By creating a stack from this template, you are agreeing to such terms.", 
+  
+  "Parameters" : {
+    "KeyPair" : {
+      "Description" : "Ubuntu instance will be launched with this key pair.",
+      "Type": "AWS::EC2::KeyPair::KeyName"
+    },
+    "InstanceType" : {
+      "Description" : "The type of EC2 instance to launch",
+      "Type" : "String",
+      "Default" : "t2.small"
+    },
+	"MountPoint" : {
+      "Description" : "Mount Point of ONTAP Cloud Volume e.g. mount 172.18.0.143:/nfsvolume",
+      "Type" : "String"
+    },
+	"VPCId": {
+            "Description": "VPC Id for Ubuntu instance",
+            "Type": "AWS::EC2::VPC::Id"
+     },
+	 "SubnetId": {
+            "Description": "SubnetID for Linux server",
+            "Type": "AWS::EC2::Subnet::Id"
+     },
+	 "RemoteAccessCIDR": {
+            "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+            "ConstraintDescription": "Must be a valid CIDR range of the form x.x.x.x/x.",
+            "Description": "CloudManager web access will be allowed from this CIDR range (example for full access: 0.0.0.0/0)",
+            "MaxLength": "18",
+            "MinLength": "9",
+            "Type": "String"
+     }
+  },
+  "Mappings" : {
+    "AWSInstanceType2Arch" : {
+      "t1.micro" : {"Arch" : "64" },
+      "t2.small" : {"Arch" : "64" }
+    },
+    "AWSRegionArch2AMI" : {
+      "eu-west-2" : {"64":"ami-fde6f799"},
+	  "eu-west-1" : {"64":"ami-016f9e78"},
+	  "ap-northeast-2" : {"64":"ami-d24e97bc"},
+	  "ap-northeast-1" : {"64":"ami-aae114cc"},
+	  "sa-east-1" : {"64":"ami-7ad8ae16"},
+	  "ca-central-1" : {"64":"ami-b3cf71d7"},
+	  "ap-southeast-1" : {"64":"ami-e8da418b"},
+	  "ap-southeast-2" : {"64":"ami-49b3aa2a"},
+	  "eu-central-1" : {"64":"ami-9c1db3f3"},
+	  "us-east-1" : {"64":"ami-b391b9c8"},
+	  "us-east-2" : {"64":"ami-a7aa8ac2"},
+	  "us-west-1" : {"64":"ami-8edbf0ee"}, 
+	  "us-west-2" : {"64":"ami-9d04e4e5"}
+    }
+  },
+  "Resources" : {
+	"UbuntuSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Default group for Ubuntu server",
+                "VpcId": {
+                    "Ref": "VPCId"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "80",
+                        "ToPort": "80",
+                        "CidrIp": {
+                            "Ref": "RemoteAccessCIDR"
+                        }
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "443",
+                        "ToPort": "443",
+                        "CidrIp": {
+                            "Ref": "RemoteAccessCIDR"
+                        }
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "22",
+                        "ToPort": "22",
+                        "CidrIp": {
+                            "Ref": "RemoteAccessCIDR"
+                        }
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "-SG"
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+    "HostInstance" : {
+      "Type" : "AWS::EC2::Instance",
+	  "DependsOn": [
+           "UbuntuSecurityGroup"
+		],
+	  "CreationPolicy": {
+		"ResourceSignal": {
+			"Timeout": "PT10M"
+			}
+		},
+	 "Properties" : {
+      
+        "ImageId" :   { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" }, 
+                      { "Fn::FindInMap" : [ "AWSInstanceType2Arch", {"Ref" : "InstanceType"}, "Arch"] } ] },
+        "InstanceType" : {"Ref" : "InstanceType" },
+        "KeyName" : {"Ref" : "KeyPair" },
+        "Tags" : [
+          { 
+            "Key" : "Name",
+            "Value" : {"Fn::Join": ["", [{ "Ref": "AWS::StackName" }, "_Ubuntu" ]]}
+		  }
+        ],
+		"NetworkInterfaces": [
+         {
+             "AssociatePublicIpAddress": "True",
+             "DeleteOnTermination": "True",
+             "SubnetId": {
+                 "Ref": "SubnetId"
+              },
+              "DeviceIndex": "0",
+              "GroupSet": [
+            {
+               "Ref": "UbuntuSecurityGroup"
+            }
+          ]
+         }
+       ],
+    "UserData": {
+         "Fn::Base64": {
+           "Fn::Join": [
+             "",
+             [
+               "#!/bin/bash -xe\n",
+               "apt-get update\n",
+               "apt-get install -y python-pip\n",
+			   "apt-get install -y nfs-common\n",
+			   "pip install --upgrade pip\n",
+			   "mkdir /netappvol\n",
+               "pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz\n",
+
+			   {"Fn::Join": [ "", [ "region=", { "Ref": "AWS::Region" }  ] ] }, "\n",
+			   {"Fn::Join": [ "", [ "stackName=", { "Ref": "AWS::StackName" }  ] ] }, "\n",
+			   {"Fn::Join": [ "", [ "mountPoint=", { "Ref": "MountPoint" }  ] ] }, "\n",
+			   "mount $(sed 's/............//' <<< \"$mountPoint\" | sed 's/.$//')  /netappvol\n",
+               "cfn-signal -e $? --resource HostInstance --stack ${stackName} --region=${region}\n"
+             ]
+           ]
+         }
+       }
+     }
+    }
+   },
+  "Outputs" : {
+    "UbuntuInstance": {
+            "Description": "Ubuntu EC2 Instance deployed by Quick Start",
+            "Value": { "Ref": "HostInstance"}
+		 },
+	"UbuntuPublicIP" : {
+      "Description" : "Public IP of Ubuntu instance",
+      "Value" : { "Fn::GetAtt" : [ "HostInstance", "PublicIp" ] }
+    }
+  }
+}

@@ -1,0 +1,569 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "NetApp ONTAP Cloud and workload template. This template initiates other templates to deploy NetApp ONTAP Cloud and the selected workload. **WARNING** This template creates Amazon EC2 instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
+  "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [
+                {
+                    "Label": {
+                        "default": "Workload options with ONTAP Cloud HA"
+                    },
+                    "Parameters": [
+                        "Workload"
+                    ]
+                },
+				{
+                    "Label": {
+                        "default": "ONTAP Cloud HA General Configuration"
+                    },
+                    "Parameters": [
+                        "CompanyName",
+                        "CloudManagerUserEmail",
+                        "CloudManagerPassword",
+						"AvailabilityType",
+						"AvailabilityZones",
+						"Capacity"
+                    ]
+                },
+				{
+                    "Label": {
+                        "default": "Network Configuration"
+                    },
+                    "Parameters": [
+                        "VPCId",
+						"SubnetId",
+						"SubnetId2",
+						"SubnetId3",
+						"RouteTableID",
+						"RemoteAccessCIDR",
+						"FloatingIPCluster",
+                        "FloatingIPData1",
+						"FloatingIPData2"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Amazon EC2 Configuration"
+                    },
+                    "Parameters": [
+                        "KeyPair"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "AWS Quick Start Configuration"
+                    },
+                    "Parameters": [
+                        "QSS3BucketName",
+                        "QSS3KeyPrefix"
+                    ]
+                }
+            ],
+            "ParameterLabels": 
+			{
+         		"CompanyName": {
+                    "default": "Company Name"
+                },
+				"KeyPair": {
+                    "default": "Key Pair"
+                },
+                "CloudManagerUserEmail": {
+                    "default": "Cloud Manager User Email"
+                },
+                "CloudManagerPassword": {
+                    "default": "Cloud Manager Password"
+                },
+				"RemoteAccessCIDR": {
+                    "default": "Remote Access CIDR"
+                },
+				"Capacity": {
+					"default": "Initial ONTAP Cloud Storage Capacity"
+				},
+                "QSS3BucketName": {
+                    "default": "Quick Start S3 Bucket Name"
+                },
+                "QSS3KeyPrefix": {
+                    "default": "Quick Start S3 Key Prefix"
+                },
+				"FloatingIPCluster":{
+					"default": "Floating IP address for ONTAP Cloud HA Cluster Management"
+				},
+				"FloatingIPData1":{
+					"default": "Floating IP address for NFS and CIFS Data access on ONTAP Cloud HA Node 1"
+				},
+				"FloatingIPData2":{
+					"default": "Floating IP address for NFS and CIFS Data access on ONTAP Cloud HA Node 2"
+				},
+				"AvailabilityType": {
+					"default": "ONTAP High Availability Type"
+				},
+				"AvailabilityZones": {
+					"default": "Availability Zones for ONTAP HA deployment"
+				},
+				"Workload": {
+					"default": "Workload to deploy with ONTAP Cloud HA"
+				},
+				"VPCId": {
+					"default": "AWS VPC ID for CloudManager and ONTAP Cloud"
+				},
+				"SubnetId": {
+					"default": "AWS Subnet ID for Cloud Manager and ONTAP Cloud HA Node 1"
+				},
+				"SubnetId2": {
+					"default": "AWS Subnet ID for ONTAP Cloud HA Node 2"
+				},
+				"SubnetId3": {
+					"default": "AWs Subnet ID for ONTAP Cloud HA Mediator Node"
+				},
+				"RouteTableID": {
+					"default": "AWS VPC Route Table ID to update with the Floating IP addresses"
+				}
+            }
+        }
+    },
+  "Parameters": { 
+
+  "CompanyName": {
+      "Type": "String",
+      "MinLength": "4",
+      "Description": "Company name. Should start with alphabetic character and contains only numbers, letters or underscore (_) and up to 35 characters",
+      "MaxLength": "35",
+      "AllowedPattern": "[a-zA-Z][a-zA-Z0-9_]*",
+      "ConstraintDescription": "Must start with alphabetic character and contains only numbers, letters or underscore (_) and up to 35 characters"
+    },
+    "KeyPair": {
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "Description": "CloudManager instance will be launched with this KeyPair"
+    },
+    "CloudManagerUserEmail": {
+      "Type": "String",
+      "Description": "Email address will be used to login to Cloud Manager"
+    },
+    "CloudManagerPassword": {
+      "Type": "String",
+      "Description": "Password will be used to login to Cloud Manager and ONTAP Cloud",
+      "NoEcho": "true",
+      "MinLength": "4",
+      "MaxLength": "20",
+      "ConstraintDescription": "Password Min length is 4 and max length is 20"
+    },
+    "RemoteAccessCIDR": {
+      "Description": "CloudManager and SQL Server access will be allowed from this CIDR range (example for full access: 0.0.0.0/0)",
+      "Type": "String",
+      "MinLength": "9",
+      "MaxLength": "18",
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "ConstraintDescription": "Must be a valid CIDR range of the form x.x.x.x/x."
+    },
+    "Capacity": {
+      "Type": "Number",
+      "Description": "Capacity required for initial ONTAP Cloud  (up to 2000 GB)",
+      "MinValue": "100",
+      "MaxValue": "2000",
+      "Default": "100",
+      "ConstraintDescription": "Database size limit up to 2000 GB"
+    },
+	"QSS3BucketName": {
+      "AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
+      "ConstraintDescription": "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
+      "Default": "otc-ha-quickstart-test",
+      "Description": "S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-). Accept default for a bucket already configured.",
+      "Type": "String"
+    },    "QSS3KeyPrefix": {
+      "AllowedPattern": "^[0-9a-zA-Z-]+(/[0-9a-zA-Z-]+)*$",
+      "ConstraintDescription": "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with a forward slash (/), which is automatically appended.",
+      "Default": "netapp/ontapcloud/ha/latest",
+      "Description": "S3 key prefix for the Quick Start assets. This prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with a forward slash (/), which is automatically appended. Accept default for standard configuration.",
+      "Type": "String"
+    },
+	 "VPCId": {
+          "Description": "Target VPC for CloudManager and ONTAP Cloud",
+            "Type": "AWS::EC2::VPC::Id"
+     },
+	"SubnetId": {
+            "Type": "AWS::EC2::Subnet::Id",
+            "Description": "SubnetID for Cloud Manager and ONTAP Cloud HA node1"
+    },
+    "SubnetId2": {
+            "Type": "AWS::EC2::Subnet::Id",
+            "Description": "SubnetID for ONTAP Cloud HA node2"
+    },
+    "SubnetId3": {
+            "Type": "AWS::EC2::Subnet::Id",
+            "Description": "SubnetID for ONTAP Cloud HA mediator node"
+    },
+    "RouteTableID": {
+            "Type" : "String",
+            "Description": "The VPC Route Table to update with the Floating IP addresses"
+    },
+    "FloatingIPCluster" : {
+            "Description" : "The Floating IP address to use for ONTAP Cloud HA Cluster managment",
+            "Type" : "String",
+            "MinLength": "7",
+            "MaxLength": "15",            
+            "AllowedPattern" : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})",
+            "ConstraintDescription" : "Must be a valid CIDR range of the form x.x.x.x"
+    },
+    "FloatingIPData1" : {
+            "Description" : "The Floating IP address to use for NFS and CIFS Data on ONTAP Cloud HA Node1",
+            "Type" : "String",
+            "MinLength": "7",
+            "MaxLength": "15",            
+            "AllowedPattern" : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})",
+            "ConstraintDescription" : "Must be a valid CIDR range of the form x.x.x.x"
+    },
+    "FloatingIPData2" : {
+            "Description" : "The Floating IP address to use for NFS and CIFS Data on ONTAP Cloud HA Node2",
+            "Type" : "String",
+            "MinLength": "7",
+            "MaxLength": "15",            
+            "AllowedPattern" : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})",
+            "ConstraintDescription" : "Must be a valid CIDR range of the form x.x.x.x"
+    },
+	"AvailabilityType": {
+          	"Description": "ONTAP High Availability Type",
+           	"Type": "String",
+            "Default": "SingleAZ",
+            "AllowedValues": [
+              	"SingleAZ",
+               	"MultiAZ"
+            ]
+        },
+
+	"Workload": {
+		"Description": "Choose the workload to deploy with ONTAP",
+           	"Type": "String",
+            "Default": "None",
+            "AllowedValues": [
+              	"None",
+               	"Ubuntu",
+				"SQLServer"
+            ]
+		},
+	"AvailabilityZones": {
+		    "Type": "List<AWS::EC2::AvailabilityZone::Name>",
+		    "Description": "List of Availability Zones to use for the subnets in the VPC. Note: The logical order is preserved. Choose 1 for Single AZ or 3 for Multi AZ deployment."
+	 }
+	},
+	"Conditions" : {
+    	"CreateMultiAZStack": {
+     		"Fn::Equals" : [{"Ref" : "AvailabilityType"}, "MultiAZ"]
+       	},
+		"CreateSingleAZStack": {
+     		"Fn::Equals" : [{"Ref" : "AvailabilityType"}, "SingleAZ"]
+       	},
+		"CreateUbuntuWorkload":{
+			"Fn::Equals" : [{"Ref" : "Workload"}, "Ubuntu"]
+		},
+		"CreateSQLWorkload":{
+			"Fn::Equals" : [{"Ref" : "Workload"}, "SQLServer"]
+		},
+		"GovCloudCondition": {
+			"Fn::Equals": [
+				{
+					"Ref": "AWS::Region"
+				},
+				"us-gov-west-1"
+			]
+		}
+   },
+  "Mappings": {},
+  "Resources": {
+        "MutliAZStack": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Condition" : "CreateMultiAZStack",
+            "Properties": {
+                "TemplateURL": {
+				"Fn::Sub":[ 
+						"https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}/templates/netapp-otc-ha-multi-az.template",
+						{
+							"QSS3Region": {
+								"Fn::If": [
+									"GovCloudCondition",
+									"s3-us-gov-west-1",
+									"s3"
+						]}}]
+                },
+                "Parameters": {
+                    "CloudManagerPassword": {
+                        "Ref": "CloudManagerPassword"
+                    },
+					"CloudManagerUserEmail": {
+                        "Ref": "CloudManagerUserEmail"
+                    },
+                    "CompanyName": {
+                        "Ref": "CompanyName"
+                    },
+                    "KeyPair": {
+                        "Ref": "KeyPair"
+                    },
+					"QSS3BucketName" : { 
+						"Ref" : "QSS3BucketName" 
+					},
+					"QSS3KeyPrefix" : { 
+						"Ref" : "QSS3KeyPrefix" 
+					},
+                    
+					"RemoteAccessCIDR": {
+                        "Ref": "RemoteAccessCIDR"
+                    },
+                    "SubnetId": {
+                        "Ref": "SubnetId"
+                    },
+					"SubnetId2": {
+                        "Ref": "SubnetId2"
+                    },
+					"SubnetId3": {
+                        "Ref": "SubnetId3"
+                    },
+					"RouteTableID": {
+                        "Ref": "RouteTableID"
+                    },
+					"FloatingIPCluster": {
+                        "Ref": "FloatingIPCluster"
+                    },
+					"FloatingIPData1": {
+                        "Ref": "FloatingIPData1"
+                    },
+					"FloatingIPData2": {
+                        "Ref": "FloatingIPData2"
+                    },
+					"VPCId": {
+                        "Ref": "VPCId"
+                    },
+                    "Capacity": {
+                        "Ref": "Capacity"
+                    }
+                }
+            }
+		},
+		"SingleAZStack": {
+            "Type": "AWS::CloudFormation::Stack",
+			"Condition" : "CreateSingleAZStack",
+            "Properties": {
+                "TemplateURL": {
+				     "Fn::Sub":[ 
+						"https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}/templates/netapp-otc-ha-single-az.template",
+						{
+							"QSS3Region": {
+								"Fn::If": [
+									"GovCloudCondition",
+									"s3-us-gov-west-1",
+									"s3"
+						]}}]
+                 },
+                "Parameters": {
+                     "CloudManagerPassword": {
+                        "Ref": "CloudManagerPassword"
+                    },
+					"CloudManagerUserEmail": {
+                        "Ref": "CloudManagerUserEmail"
+                    },
+                    "CompanyName": {
+                        "Ref": "CompanyName"
+                    },
+                    "KeyPair": {
+                        "Ref": "KeyPair"
+                    },
+					"QSS3BucketName" : { 
+						"Ref" : "QSS3BucketName" 
+					},
+					"QSS3KeyPrefix" : { 
+						"Ref" : "QSS3KeyPrefix" 
+					},
+                    
+					"RemoteAccessCIDR": {
+                        "Ref": "RemoteAccessCIDR"
+                    },
+                    "SubnetId": {
+                        "Ref": "SubnetId"
+                    },
+					"VPCId": {
+                        "Ref": "VPCId"
+                    },
+                    "Capacity": {
+                        "Ref": "Capacity"
+                    }
+                }
+            }
+		},
+		"UbuntuStack": {
+            "Type": "AWS::CloudFormation::Stack",
+			"Condition" : "CreateUbuntuWorkload",
+			"Properties": { "TemplateURL": {
+                    "Fn::Sub":[ 
+						"https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}/templates/netapp-otc-ha-ubuntu.template",
+						{
+							"QSS3Region": {
+								"Fn::If": [
+									"GovCloudCondition",
+									"s3-us-gov-west-1",
+									"s3"
+						]}}]
+                },
+				"Parameters": {
+                     
+                    "KeyPair": {
+                        "Ref": "KeyPair"
+                    },
+					"RemoteAccessCIDR": {
+                        "Ref": "RemoteAccessCIDR"
+                    },
+                    "SubnetId": {
+                        "Ref": "SubnetId"
+                    },
+					"VPCId": {
+                        "Ref": "VPCId"
+                    },
+                    "MountPoint": {
+                        "Fn::If" : [
+					    	"CreateMultiAZStack",
+					    	{ "Fn::GetAtt": [
+			                    "MutliAZStack",
+			                    "Outputs.MountPoint"
+			                ]},
+					    	{ "Fn::GetAtt": [
+			                    "SingleAZStack",
+			                    "Outputs.MountPoint"
+			                ]}
+					  	]
+                    }
+            }
+		  }
+		},
+		"SQLStack": {
+            "Type": "AWS::CloudFormation::Stack",
+			"Condition" : "CreateSQLWorkload",
+			"Properties": { "TemplateURL": {
+                    "Fn::Sub":[ 
+						"https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}/templates/netapp-otc-ha-sqlserver.template",
+						{
+							"QSS3Region": {
+								"Fn::If": [
+									"GovCloudCondition",
+									"s3-us-gov-west-1",
+									"s3"
+						]}}]
+				},
+				"Parameters": {
+                    "AdminNodeLIF": {
+                        "Fn::If" : [
+					    	"CreateMultiAZStack",
+					    	{ "Fn::GetAtt": [
+			                    "MutliAZStack",
+			                    "Outputs.ClusterManagementLif"
+			                ]},
+					    	{ "Fn::GetAtt": [
+			                    "SingleAZStack",
+			                    "Outputs.ClusterManagementLif"
+			                ]}
+					  	]
+                    },
+                    "Capacity": {
+                        "Ref": "Capacity"
+                    },
+                    "KeyName": {
+                        "Ref": "KeyPair"
+                    },
+                    "QSS3BucketName": {
+                        "Ref": "QSS3BucketName"
+                    },
+                    "QSS3KeyPrefix": {
+                        "Ref": "QSS3KeyPrefix"
+                    },
+                    "SourceCidrForRemoteManagement": {
+                        "Ref": "RemoteAccessCIDR"
+                    },
+                    "SubnetId": {
+                        "Ref": "SubnetId"
+                    },
+                    "SvmName": {
+                       "Fn::If" : [
+					    	"CreateMultiAZStack",
+					    	{ "Fn::GetAtt": [
+			                    "MutliAZStack",
+			                    "Outputs.ONTAPCloudSvmName"
+			                ]},
+					    	{ "Fn::GetAtt": [
+			                    "SingleAZStack",
+			                    "Outputs.ONTAPCloudSvmName"
+			                ]}
+					  	]
+                    },
+                    "SvmPassword": {
+                        "Ref": "CloudManagerPassword"
+                    },
+                    "VPCId": {
+                        "Ref": "VPCId"
+                    },
+                    "iScSILIF": {
+                  		"Fn::If" : [
+					    	"CreateMultiAZStack",
+					    	{ "Fn::GetAtt": [
+			                    "MutliAZStack",
+			                    "Outputs.IscsiDataLif"
+			                ]},
+					    	{ "Fn::GetAtt": [
+			                    "SingleAZStack",
+			                    "Outputs.IscsiDataLif"
+			                ]}
+					  	]
+                    }
+              }
+		  }
+		}
+    },
+	"Outputs" : {
+		"CloudManagerURL" : {
+			 "Description" : "CloudManager URL",
+			  "Value": {
+						"Fn::If" : [
+					    	"CreateMultiAZStack",
+					    	{ "Fn::GetAtt": [
+			                    "MutliAZStack",
+			                    "Outputs.CloudManagerURL"
+			                ]},
+					    	{ "Fn::GetAtt": [
+			                    "SingleAZStack",
+			                    "Outputs.CloudManagerURL"
+			                ]}
+					  	]
+			  }
+		},
+		"UbuntuInstance": {
+            "Description": "Ubuntu EC2 Instance deployed by Quick Start",
+			"Condition" : "CreateUbuntuWorkload",
+            "Value": {
+                "Fn::GetAtt": [
+                    "UbuntuStack",
+                    "Outputs.UbuntuInstance"
+                ]
+            }
+        },
+		"UbuntuClientIP" : {
+			"Condition": "CreateUbuntuWorkload",
+			"Description" : "Public IP of Ubuntu instance",
+            "Value": { "Fn::GetAtt": [ "UbuntuStack", "Outputs.UbuntuPublicIP" ] }
+        },
+		"SQLServerInstance": {
+            "Description": "SQL Server EC2 Instance deployed by Quick Start",
+			"Condition" : "CreateSQLWorkload",
+            "Value": {
+                "Fn::GetAtt": [
+                    "SQLStack",
+                    "Outputs.SQLServerInstance"
+                ]
+            }
+        },
+        "SQLIPAddress": {
+            "Description": "Public IP Address of SQL Server",
+			"Condition" : "CreateSQLWorkload",
+            "Value": {
+                "Fn::GetAtt": [
+                    "SQLStack",
+                    "Outputs.SQLIPAddress"
+                ]
+            }
+        }
+	}
+}
