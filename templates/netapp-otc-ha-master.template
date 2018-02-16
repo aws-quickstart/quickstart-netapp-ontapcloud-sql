@@ -278,18 +278,11 @@
             "Type": "AWS::CloudFormation::Stack",
 			"Properties": {
                 "TemplateURL": {
-					"Fn::If" : [
-					    "CreateMultiAZ", 
-							{"Fn::Sub":[ 
-								"https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}/submodules/quickstart-aws-vpc/templates/aws-vpc.template",
-								{
-									"QSS3Region": {"Fn::If":[ "GovCloudCondition", "s3-us-gov-west-1", "s3"]}}]
-								},
-							{"Fn::Sub":[ 
-								"https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}/templates/netapp-otc-ha-newvpc.template",
-								{
-									"QSS3Region": {"Fn::If":[ "GovCloudCondition", "s3-us-gov-west-1", "s3"]}}]
-							}]},	
+                	"Fn::Sub":[ 
+					"https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}/templates/netapp-otc-ha-vpc.template",
+					{
+						"QSS3Region": {"Fn::If":[ "GovCloudCondition", "s3-us-gov-west-1", "s3"]}}]
+				},	
                 "Parameters": {
                     "AvailabilityZones": {
                         "Fn::Join": [
@@ -302,8 +295,8 @@
                     "KeyPairName": {
                         "Ref": "KeyPair"
                     },
-                    "NumberOfAZs": {
-                        "Fn::If": [	"CreateMultiAZ", "3", "1" ]
+                    "AvailabilityType": {
+                        "Ref": "AvailabilityType"
                     },
                     "PublicSubnet1CIDR": {
                         "Fn::FindInMap" : [ "SubnetRanges", { "Ref" : "CIDRRange" }, "PublicSubnetAZ1"]
@@ -325,7 +318,12 @@
                         ]
                     ]
                     },
-					"CreatePrivateSubnets": false
+					"QSS3BucketName" : { 
+						"Ref" : "QSS3BucketName" 
+					},
+					"QSS3KeyPrefix" : { 
+						"Ref" : "QSS3KeyPrefix" 
+					}
                 }
             }
         },
@@ -378,43 +376,22 @@
                         ]
                     },
                     "SubnetId": {
-                        "Fn::If" : [
-					    	"CreateMultiAZ",
-					    	{ "Fn::GetAtt": [
+					    	 "Fn::GetAtt": [
 			                    "VPCStack",
 			                    "Outputs.PublicSubnet1ID"
-			                ]},
-					    	{ "Fn::GetAtt": [
-			                    "VPCStack",
-			                    "Outputs.PublicSubnet"
-			                ]}
-					  	]
+			                ]
                     },
 					"SubnetId2": {
-                         "Fn::If" : [
-					    	"CreateMultiAZ",
-					    	{ "Fn::GetAtt": [
+						"Fn::GetAtt": [
 			                    "VPCStack",
 			                    "Outputs.PublicSubnet2ID"
-			                ]},
-					    	{ "Fn::GetAtt": [
-			                    "VPCStack",
-			                    "Outputs.PublicSubnet"
-			                ]}
-					  	]
+			                ]
                     },
 					"SubnetId3": {
-                         "Fn::If" : [
-					    	"CreateMultiAZ",
-					    	{ "Fn::GetAtt": [
+						"Fn::GetAtt": [
 			                    "VPCStack",
 			                    "Outputs.PublicSubnet3ID"
-			                ]},
-					    	{ "Fn::GetAtt": [
-			                    "VPCStack",
-			                    "Outputs.PublicSubnet"
-			                ]}
-					  	]
+			                ]
                     },
 					"RouteTableID": {
 					    	"Fn::GetAtt": [

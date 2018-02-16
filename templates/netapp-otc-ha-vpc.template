@@ -1,0 +1,203 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description" : "This template will create a VPC with public subnet.",
+  "Metadata": {
+    "Version": "v1.0"
+  },
+  "Parameters": {
+    "AvailabilityZones": {
+            "Description": "List of Availability Zones to use for the subnets in the VPC. Note: The logical order is preserved.",
+			"Default": "us-east-1",
+            "Type": "List<AWS::EC2::AvailabilityZone::Name>"
+     },
+	 "KeyPairName": {
+            "Description": "Public/private key pairs allow you to securely connect to your NAT instance after it launches. This is used only if the region does not support NAT gateways.",
+            "Type": "AWS::EC2::KeyPair::KeyName"
+     },
+	 "VPCCIDR": {
+      "Description": "VPCCIDR Range (will be a /16 block)",
+      "Type": "String",
+      "Default": "172.18.0.0/16",
+      "AllowedValues": ["172.18.0.0/16", "172.19.0.0/16","172.20.0.0/16","172.21.0.0/16","172.22.0.0/16","172.23.0.0/16"]
+    },
+
+	  "AvailabilityType": {
+          	"Description": "ONTAP High Availability Type",
+           	"Type": "String",
+            "Default": "SingleAZ",
+            "AllowedValues": [
+              	"SingleAZ",
+               	"MultiAZ"
+            ]
+        },
+	  "PublicSubnet1CIDR": {
+            "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+            "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+            "Default": "10.0.128.0/20",
+            "Description": "CIDR block for the public DMZ subnet 1 located in Availability Zone 1",
+            "Type": "String"
+        },
+        "PublicSubnet2CIDR": {
+            "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+            "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+            "Default": "10.0.144.0/20",
+            "Description": "CIDR block for the public DMZ subnet 2 located in Availability Zone 2",
+            "Type": "String"
+        },
+        "PublicSubnet3CIDR": {
+            "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+            "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+            "Default": "10.0.160.0/20",
+            "Description": "CIDR block for the public DMZ subnet 3 located in Availability Zone 3",
+            "Type": "String"
+        },
+		"QSS3BucketName": {
+      "AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
+      "ConstraintDescription": "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
+      "Default": "otc-ha-quickstart-test",
+      "Description": "S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-). Accept default for a bucket already configured.",
+      "Type": "String"
+    },
+    "QSS3KeyPrefix": {
+      "AllowedPattern": "^[0-9a-zA-Z-]+(/[0-9a-zA-Z-]+)*$",
+      "ConstraintDescription": "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with a forward slash (/), which is automatically appended.",
+      "Default": "netapp/ontapcloud/ha/latest",
+      "Description": "S3 key prefix for the Quick Start assets. This prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with a forward slash (/), which is automatically appended. Accept default for standard configuration.",
+      "Type": "String"
+    }
+  },
+	"Conditions" : {
+    	"CreateMultiAZ": {
+     		"Fn::Equals" : [{"Ref" : "AvailabilityType"}, "MultiAZ"]
+       	},
+       	"CreateSingleAZ": {
+     		"Fn::Equals" : [{"Ref" : "AvailabilityType"}, "SingleAZ"]
+       	},
+       	"GovCloudCondition": {
+			"Fn::Equals": [
+				{
+					"Ref": "AWS::Region"
+				},
+				"us-gov-west-1"
+			]
+		}
+   	},
+  "Resources" : {
+
+    "VPCMultiAZStack": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Condition": "CreateMultiAZ",
+			"Properties": {
+                "TemplateURL": {
+                	"Fn::Sub":[ 
+						"https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}/submodules/quickstart-aws-vpc/templates/aws-vpc.template",
+						{"QSS3Region": {"Fn::If":[ "GovCloudCondition", "s3-us-gov-west-1", "s3"]}}]
+					},	
+                "Parameters": {
+                    "AvailabilityZones": {
+                        "Fn::Join": [
+                            ",",
+                            {
+                                "Ref": "AvailabilityZones"
+                            }
+                        ]
+                    },
+                    "KeyPairName": {
+                        "Ref": "KeyPairName"
+                    },
+                    "NumberOfAZs": "3",
+                    "PublicSubnet1CIDR": {
+                        "Ref" : "PublicSubnet1CIDR"
+                    },
+                    "PublicSubnet2CIDR": {
+                        "Ref" : "PublicSubnet2CIDR"
+                    },
+                    "PublicSubnet3CIDR": {
+                        "Ref" : "PublicSubnet3CIDR"
+                    },
+                    "VPCCIDR": {
+						"Ref": "VPCCIDR"
+                    },
+					"CreatePrivateSubnets": false
+                }
+            }
+        },
+    "VPCSingleAZStack": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Condition": "CreateSingleAZ",
+			"Properties": {
+                "TemplateURL": {
+                	"Fn::Sub":[ 
+						"https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}/templates/netapp-otc-ha-newvpc.template",
+						{"QSS3Region": {"Fn::If":[ "GovCloudCondition", "s3-us-gov-west-1", "s3"]}}]
+					},	
+                "Parameters": {
+                    "AvailabilityZones": {
+                        "Fn::Join": [
+                            ",",
+                            {
+                                "Ref": "AvailabilityZones"
+                            }
+                        ]
+                    },
+                    "PublicSubnet1CIDR": {
+                        "Ref" : "PublicSubnet1CIDR"
+                    },
+                    "VPCCIDR": {
+						"Ref": "VPCCIDR"
+                    }
+                }
+            }
+        }
+  },
+
+  "Outputs" : {
+    "VPCID" : {
+    	"Value": {
+	    	"Fn::If": [
+	    		"CreateSingleAZ",
+	    		{ "Fn::GetAtt": [ "VPCSingleAZStack", "Outputs.VPCID" ] },
+	    		{ "Fn::GetAtt": [ "VPCMultiAZStack", "Outputs.VPCID" ] }
+			]
+    	}
+	},
+    "PublicSubnet1ID" : {
+    	"Value": {
+			"Fn::If": [
+	    		"CreateSingleAZ",
+	    		{ "Fn::GetAtt": [ "VPCSingleAZStack", "Outputs.PublicSubnet" ] },
+	    		{ "Fn::GetAtt": [ "VPCMultiAZStack", "Outputs.PublicSubnet1ID" ] }
+			]
+		}
+	},
+	"PublicSubnet2ID" : {
+		"Value": {
+			"Fn::If": [
+	    		"CreateSingleAZ",
+	    		{ "Fn::GetAtt": [ "VPCSingleAZStack", "Outputs.PublicSubnet" ] },
+	    		{ "Fn::GetAtt": [ "VPCMultiAZStack", "Outputs.PublicSubnet2ID" ] }
+			]
+		}
+	},
+	"PublicSubnet3ID" : {
+		"Value": {
+			"Fn::If": [
+	    		"CreateSingleAZ",
+	    		{ "Fn::GetAtt": [ "VPCSingleAZStack", "Outputs.PublicSubnet" ] },
+	    		{ "Fn::GetAtt": [ "VPCMultiAZStack", "Outputs.PublicSubnet3ID" ] }
+			]
+		}
+	},
+	"PublicSubnetRouteTable": {
+		"Value": {
+			"Fn::If": [
+	    		"CreateSingleAZ",
+	    		{ "Fn::GetAtt": [ "VPCSingleAZStack", "Outputs.PublicSubnetRouteTable" ] },
+	    		{ "Fn::GetAtt": [ "VPCMultiAZStack", "Outputs.PublicSubnetRouteTable" ] }
+			]
+		}
+	}
+
+  }
+}

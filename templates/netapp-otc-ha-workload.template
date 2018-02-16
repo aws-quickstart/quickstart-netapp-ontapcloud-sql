@@ -269,13 +269,12 @@
    },
   "Mappings": {},
   "Resources": {
-        "MutliAZStack": {
+        "CloudManagerStack": {
             "Type": "AWS::CloudFormation::Stack",
-            "Condition" : "CreateMultiAZStack",
             "Properties": {
                 "TemplateURL": {
 				"Fn::Sub":[ 
-						"https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}/templates/netapp-otc-ha-multi-az.template",
+						"https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}/templates/netapp-otc-ha-cloud-manager.template",
 						{
 							"QSS3Region": {
 								"Fn::If": [
@@ -285,6 +284,9 @@
 						]}}]
                 },
                 "Parameters": {
+                    "AvailabilityType": {
+                    	"Ref": "AvailabilityType"
+                	},
                     "CloudManagerPassword": {
                         "Ref": "CloudManagerPassword"
                     },
@@ -337,56 +339,6 @@
                 }
             }
 		},
-		"SingleAZStack": {
-            "Type": "AWS::CloudFormation::Stack",
-			"Condition" : "CreateSingleAZStack",
-            "Properties": {
-                "TemplateURL": {
-				     "Fn::Sub":[ 
-						"https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}/templates/netapp-otc-ha-single-az.template",
-						{
-							"QSS3Region": {
-								"Fn::If": [
-									"GovCloudCondition",
-									"s3-us-gov-west-1",
-									"s3"
-						]}}]
-                 },
-                "Parameters": {
-                     "CloudManagerPassword": {
-                        "Ref": "CloudManagerPassword"
-                    },
-					"CloudManagerUserEmail": {
-                        "Ref": "CloudManagerUserEmail"
-                    },
-                    "CompanyName": {
-                        "Ref": "CompanyName"
-                    },
-                    "KeyPair": {
-                        "Ref": "KeyPair"
-                    },
-					"QSS3BucketName" : { 
-						"Ref" : "QSS3BucketName" 
-					},
-					"QSS3KeyPrefix" : { 
-						"Ref" : "QSS3KeyPrefix" 
-					},
-                    
-					"RemoteAccessCIDR": {
-                        "Ref": "RemoteAccessCIDR"
-                    },
-                    "SubnetId": {
-                        "Ref": "SubnetId"
-                    },
-					"VPCId": {
-                        "Ref": "VPCId"
-                    },
-                    "Capacity": {
-                        "Ref": "Capacity"
-                    }
-                }
-            }
-		},
 		"UbuntuStack": {
             "Type": "AWS::CloudFormation::Stack",
 			"Condition" : "CreateUbuntuWorkload",
@@ -416,17 +368,10 @@
                         "Ref": "VPCId"
                     },
                     "MountPoint": {
-                        "Fn::If" : [
-					    	"CreateMultiAZStack",
-					    	{ "Fn::GetAtt": [
-			                    "MutliAZStack",
+                        "Fn::GetAtt": [
+			                    "CloudManagerStack",
 			                    "Outputs.MountPoint"
-			                ]},
-					    	{ "Fn::GetAtt": [
-			                    "SingleAZStack",
-			                    "Outputs.MountPoint"
-			                ]}
-					  	]
+			                ]
                     }
             }
 		  }
@@ -447,17 +392,10 @@
 				},
 				"Parameters": {
                     "AdminNodeLIF": {
-                        "Fn::If" : [
-					    	"CreateMultiAZStack",
-					    	{ "Fn::GetAtt": [
-			                    "MutliAZStack",
+                        "Fn::GetAtt": [
+			                    "CloudManagerStack",
 			                    "Outputs.ClusterManagementLif"
-			                ]},
-					    	{ "Fn::GetAtt": [
-			                    "SingleAZStack",
-			                    "Outputs.ClusterManagementLif"
-			                ]}
-					  	]
+			                ]
                     },
                     "Capacity": {
                         "Ref": "Capacity"
@@ -478,17 +416,10 @@
                         "Ref": "SubnetId"
                     },
                     "SvmName": {
-                       "Fn::If" : [
-					    	"CreateMultiAZStack",
-					    	{ "Fn::GetAtt": [
-			                    "MutliAZStack",
+                       "Fn::GetAtt": [
+			                    "CloudManagerStack",
 			                    "Outputs.ONTAPCloudSvmName"
-			                ]},
-					    	{ "Fn::GetAtt": [
-			                    "SingleAZStack",
-			                    "Outputs.ONTAPCloudSvmName"
-			                ]}
-					  	]
+			                ]
                     },
                     "SvmPassword": {
                         "Ref": "CloudManagerPassword"
@@ -497,17 +428,10 @@
                         "Ref": "VPCId"
                     },
                     "iScSILIF": {
-                  		"Fn::If" : [
-					    	"CreateMultiAZStack",
-					    	{ "Fn::GetAtt": [
-			                    "MutliAZStack",
+                  		"Fn::GetAtt": [
+			                    "CloudManagerStack",
 			                    "Outputs.IscsiDataLif"
-			                ]},
-					    	{ "Fn::GetAtt": [
-			                    "SingleAZStack",
-			                    "Outputs.IscsiDataLif"
-			                ]}
-					  	]
+			                ]
                     }
               }
 		  }
@@ -517,17 +441,10 @@
 		"CloudManagerURL" : {
 			 "Description" : "CloudManager URL",
 			  "Value": {
-						"Fn::If" : [
-					    	"CreateMultiAZStack",
-					    	{ "Fn::GetAtt": [
-			                    "MutliAZStack",
+						"Fn::GetAtt": [
+			                    "CloudManagerStack",
 			                    "Outputs.CloudManagerURL"
-			                ]},
-					    	{ "Fn::GetAtt": [
-			                    "SingleAZStack",
-			                    "Outputs.CloudManagerURL"
-			                ]}
-					  	]
+			                ]
 			  }
 		},
 		"UbuntuInstance": {

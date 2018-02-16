@@ -5,7 +5,7 @@
           },
           {
               "ParameterKey": "AvailabilityZones",
-              "ParameterValue": "$[alfred_getaz_2]"
+              "ParameterValue": "$[alfred_getaz_3]"
           },
           {
               "ParameterKey": "CloudManagerPassword",
@@ -34,5 +34,13 @@
           {
               "ParameterKey": "QSS3KeyPrefix",
               "ParameterValue": "quickstart-netapp-ontapcloud-sql"
+          },
+          {
+              "ParameterKey": "AvailabilityType",
+              "ParameterValue": "MultiAZ"
+          },
+          {
+              "ParameterKey": "Workload",
+              "ParameterValue": "SQLServer"
           }
 ]
