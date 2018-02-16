@@ -6,27 +6,6 @@
             "ParameterGroups": [
                 {
                     "Label": {
-                        "default": "Workload options with ONTAP Cloud HA"
-                    },
-                    "Parameters": [
-                        "Workload"
-                    ]
-                },
-				{
-                    "Label": {
-                        "default": "ONTAP Cloud HA General Configuration"
-                    },
-                    "Parameters": [
-                        "CompanyName",
-                        "CloudManagerUserEmail",
-                        "CloudManagerPassword",
-						"AvailabilityType",
-						"AvailabilityZones",
-						"Capacity"
-                    ]
-                },
-				{
-                    "Label": {
                         "default": "Network Configuration"
                     },
                     "Parameters": [
@@ -50,6 +29,27 @@
                     ]
                 },
                 {
+                    "Label": {
+                        "default": "ONTAP Cloud HA General Configuration"
+                    },
+                    "Parameters": [
+                        "CompanyName",
+                        "CloudManagerUserEmail",
+                        "CloudManagerPassword",
+						"AvailabilityType",
+						"AvailabilityZones",
+						"Capacity"
+                    ]
+                },
+				{
+                    "Label": {
+                        "default": "Workload options with ONTAP Cloud HA"
+                    },
+                    "Parameters": [
+                        "Workload"
+                    ]
+                },
+				{
                     "Label": {
                         "default": "AWS Quick Start Configuration"
                     },
@@ -77,7 +77,7 @@
                     "default": "Remote Access CIDR"
                 },
 				"Capacity": {
-					"default": "Initial ONTAP Cloud Storage Capacity"
+					"default": "ONTAP Cloud Storage Capacity"
 				},
                 "QSS3BucketName": {
                     "default": "Quick Start S3 Bucket Name"
@@ -86,37 +86,37 @@
                     "default": "Quick Start S3 Key Prefix"
                 },
 				"FloatingIPCluster":{
-					"default": "Floating IP address for ONTAP Cloud HA Cluster Management"
+					"default": "Floating IP address Cluster Management"
 				},
 				"FloatingIPData1":{
-					"default": "Floating IP address for NFS and CIFS Data access on ONTAP Cloud HA Node 1"
+					"default": "Floating IP address Node 1"
 				},
 				"FloatingIPData2":{
-					"default": "Floating IP address for NFS and CIFS Data access on ONTAP Cloud HA Node 2"
+					"default": "Floating IP address Node 2"
 				},
 				"AvailabilityType": {
-					"default": "ONTAP High Availability Type"
+					"default": "High Availability Type"
 				},
 				"AvailabilityZones": {
-					"default": "Availability Zones for ONTAP HA deployment"
+					"default": "Availability Zones"
 				},
 				"Workload": {
-					"default": "Workload to deploy with ONTAP Cloud HA"
+					"default": "Workload type"
 				},
 				"VPCId": {
-					"default": "AWS VPC ID for CloudManager and ONTAP Cloud"
+					"default": "VPC ID"
 				},
 				"SubnetId": {
-					"default": "AWS Subnet ID for Cloud Manager and ONTAP Cloud HA Node 1"
+					"default": "Node 1 Subnet ID"
 				},
 				"SubnetId2": {
-					"default": "AWS Subnet ID for ONTAP Cloud HA Node 2"
+					"default": "Node 2 Subnet ID"
 				},
 				"SubnetId3": {
-					"default": "AWs Subnet ID for ONTAP Cloud HA Mediator Node"
+					"default": "Mediator Node Subnet ID"
 				},
 				"RouteTableID": {
-					"default": "AWS VPC Route Table ID to update with the Floating IP addresses"
+					"default": "Route Table ID"
 				}
             }
         }
