@@ -5,7 +5,7 @@
           },
           {
               "ParameterKey": "CloudManagerPassword",
-              "ParameterValue": "$[alfred_genpass_32]"
+              "ParameterValue": "$[alfred_genpass_12]"
           },
           {
               "ParameterKey": "CloudManagerUserEmail",
