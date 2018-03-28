@@ -294,7 +294,7 @@
                         ]
                     },
                     "UniqueResourceId": {
-                        "Ref": "AWS::StackName"
+                    	"Fn::Select" : [ "0", { "Fn::Split": ["-", { "Ref": "AWS::StackName" }]}]
                     },
                     "VPCId": {
                         "Fn::GetAtt": [
