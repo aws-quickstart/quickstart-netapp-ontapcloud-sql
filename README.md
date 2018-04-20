@@ -17,6 +17,9 @@ Deployment steps:
 3. In the AWS CloudFormation console, launch one of the following templates to build a new stack:
   * /templates/netapp-otc-sql-master.template (to deploy NetApp ONTAP cloud into a new VPC)
   * /templates/netapp-otc-sql.template (to deploy NetApp ONTAP cloud into your existing VPC)
-4. Access your ONTAP Cloud with SQL Server Deployment using the instructions provided in the [deployment guide](https://s3.amazonaws.com/quickstart-reference/netapp/ontapcloud/sql/latest/doc/netapp-ontap-cloud-on-the-aws-cloud.pdf).
+4. Access your ONTAP Cloud with SQL Server Deployment using the instructions provided in the [deployment guide](https://fwd.aws/jWnvA).
 
-The Quick Start provides parameters that you can set to customize your deployment. For architectural details, best practices, step-by-step instructions, and customization options, see the [deployment guide](https://s3.amazonaws.com/quickstart-reference/netapp/ontapcloud/sql/latest/doc/netapp-ontap-cloud-on-the-aws-cloud.pdf).
+The Quick Start provides parameters that you can set to customize your deployment. For architectural details, best practices, step-by-step instructions, and customization options, see the [deployment guide](https://fwd.aws/jWnvA).
+
+To post feedback, submit feature ideas, or report bugs, use the **Issues** section of this GitHub repo.
+If you'd like to submit code for this Quick Start, please review the [AWS Quick Start Contributor's Kit](https://aws-quickstart.github.io/). 
