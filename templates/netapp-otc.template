@@ -189,6 +189,28 @@
                         "PolicyDocument": {
                             "Statement": [
                                 {
+                                    "Action":[
+                                        "s3:GetObject"
+                                    ],
+                                    "Effect":"Allow",
+                                    "Resource":{
+                                        "Fn::Join":[
+                                            "",
+                                            [
+                                                "arn:*:s3:::",
+                                                {
+                                                    "Ref":"QSS3BucketName"
+                                                },
+                                                "/",
+                                                {
+                                                    "Ref":"QSS3KeyPrefix"
+                                                },
+                                                "*"
+                                            ]
+                                        ]
+                                    }
+                                },
+                                {
                                     "Effect": "Allow",
                                     "Action": [
                                         "ec2:DescribeInstances",
@@ -399,6 +421,19 @@
             ],
             "Type": "AWS::EC2::Instance",
             "Metadata": {
+                "AWS::CloudFormation::Authentication":{
+                    "s3AccessCreds":{
+                        "type":"S3",
+                        "buckets":[
+                            {
+                                "Ref":"QSS3BucketName"
+                            }
+                        ],
+                        "roleName":{
+                            "Ref":"OCCMInstanceIAMRole"
+                        }
+                    }
+                },
                 "AWS::CloudFormation::Init": {
                     "config": {
                         "files": {
@@ -468,7 +503,8 @@
                                 },
                                 "mode": "000774",
                                 "owner": "root",
-                                "group": "root"
+                                "group": "root",
+                                "authentication":"s3AccessCreds"
                             }
                         }
                     }

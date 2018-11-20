@@ -129,43 +129,43 @@
                 "WS2012R2SQLSTD2016": "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP1_Standard-2018.10.14"
             },
             "ap-northeast-1": {
-                "WS2012R2SQLSTD2016": "ami-88d46fee"
+                "WS2012R2SQLSTD2016": "ami-0095af7831bbd231d"
             },
             "ap-northeast-2": {
-                "WS2012R2SQLSTD2016": "ami-d11fb8bf"
+                "WS2012R2SQLSTD2016": "ami-091b26d4450f3010a"
             },
             "ap-south-1": {
-                "WS2012R2SQLSTD2016": "ami-dbe4aab4"
+                "WS2012R2SQLSTD2016": "ami-0f37aba5bbd32d8d5"
             },
             "ap-southeast-1": {
-                "WS2012R2SQLSTD2016": "ami-928cdef1"
+                "WS2012R2SQLSTD2016": "ami-029708af85f591974"
             },
             "ap-southeast-2": {
-                "WS2012R2SQLSTD2016": "ami-f109fc93"
+                "WS2012R2SQLSTD2016": "ami-09bba781b2be75324"
             },
             "ca-central-1": {
-                "WS2012R2SQLSTD2016": "ami-5b47fc3f"
+                "WS2012R2SQLSTD2016": "ami-0d1ad702bcea16568"
             },
             "eu-central-1": {
-                "WS2012R2SQLSTD2016": "ami-a4dc53cb"
+                "WS2012R2SQLSTD2016": "ami-0dbb63b069a8cffb3"
             },
             "eu-west-1": {
-                "WS2012R2SQLSTD2016": "ami-c0ea57b9"
+                "WS2012R2SQLSTD2016": "ami-080a41d24a85d4194"
             },
             "sa-east-1": {
-                "WS2012R2SQLSTD2016": "ami-1fa7e373"
+                "WS2012R2SQLSTD2016": "ami-0cc7510a865eb48d7"
             },
             "us-east-1": {
-                "WS2012R2SQLSTD2016": "ami-a8039cd2"
+                "WS2012R2SQLSTD2016": "ami-089fcc7753de53ac1"
             },
             "us-east-2": {
-                "WS2012R2SQLSTD2016": "ami-934861f6"
+                "WS2012R2SQLSTD2016": "ami-03bc93e11dc700f6c"
             },
             "us-west-1": {
-                "WS2012R2SQLSTD2016": "ami-ca8ab1aa"
+                "WS2012R2SQLSTD2016": "ami-09c4824c7ca208bc8"
             },
             "us-west-2": {
-                "WS2012R2SQLSTD2016": "ami-81528bf9"
+                "WS2012R2SQLSTD2016": "ami-022d994944035cd7c"
             }
         },
         "AWSInfoRegionMap": {
@@ -263,9 +263,96 @@
                 ]
             }
         },
+        "SQLSRVIAMRole": {
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": [
+                                "sts:AssumeRole"
+                            ],
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "ec2.amazonaws.com"
+                                ]
+                            }
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                },
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Action":[
+                                        "s3:GetObject"
+                                    ],
+                                    "Effect":"Allow",
+                                    "Resource":{
+                                        "Fn::Join":[
+                                            "",
+                                            [
+                                                "arn:*:s3:::",
+                                                {
+                                                    "Ref":"QSS3BucketName"
+                                                },
+                                                "/",
+                                                {
+                                                    "Ref":"QSS3KeyPrefix"
+                                                },
+                                                "*"
+                                            ]
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "PolicyName": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "UniqueResourceId"
+                                    },
+                                    "-SQLSRVPolicy"
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            },
+            "Type": "AWS::IAM::Role"
+        },
+        "SQLSRVInstanceProfile": {
+            "Properties": {
+                "Path": "/",
+                "Roles": [
+                    {
+                        "Ref": "SQLSRVIAMRole"
+                    }
+                ]
+            },
+            "Type": "AWS::IAM::InstanceProfile"
+        },
         "SQLServerInstance": {
             "Type": "AWS::EC2::Instance",
             "Metadata": {
+                "AWS::CloudFormation::Authentication":{
+                    "s3AccessCreds":{
+                        "type":"S3",
+                        "buckets":[
+                            {
+                                "Ref":"QSS3BucketName"
+                            }
+                        ],
+                        "roleName":{
+                            "Ref":"SQLSRVIAMRole"
+                        }
+                    }
+                },
                 "AWS::CloudFormation::Init": {
                     "configSets": {
                         "config": [
@@ -407,6 +494,9 @@
             "Properties": {
                 "InstanceType": {
                     "Ref": "InstanceType"
+                },
+                "IamInstanceProfile": {
+                    "Ref": "SQLSRVInstanceProfile"
                 },
                 "ImageId": {
                     "Fn::FindInMap": [
