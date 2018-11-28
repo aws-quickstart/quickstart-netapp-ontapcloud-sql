@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "ONTAP Cloud Single - Cloud Manager 3.3",
+  "Description": "ONTAP Cloud Single - Cloud Manager 3.5",
   "Parameters": {
     "CloudManagerPassword": {
       "ConstraintDescription": "Password Min length is 4 and max length is 20",
