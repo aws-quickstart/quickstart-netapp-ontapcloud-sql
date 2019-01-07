@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "This template creates a single server installation of Microsoft Windows Server 2012 R2 with SQL Server 2014 Standard. **WARNING** This template creates Amazon EC2 Windows instance and related resources. You will be billed for the AWS resources used if you create a stack from this template. Also, you are solely responsible for complying with the license terms for the software downloaded and installed by this template. By creating a stack from this template, you are agreeing to such terms.",
+    "Description": "This template creates a single server installation of Microsoft Windows Server 2012 R2 with SQL Server 2016 SP1 Standard. **WARNING** This template creates Amazon EC2 Windows instance and related resources. You will be billed for the AWS resources used if you create a stack from this template. Also, you are solely responsible for complying with the license terms for the software downloaded and installed by this template. By creating a stack from this template, you are agreeing to such terms.",
     "Parameters": {
         "AdminNodeLIF": {
             "Description": "IP Address of Admin LIF for ONTAP node",
@@ -230,16 +230,16 @@
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "80",
-                        "ToPort": "80",
+                        "FromPort": 80,
+                        "ToPort": 80,
                         "CidrIp": {
                             "Ref": "SourceCidrForRemoteManagement"
                         }
                     },
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "3389",
-                        "ToPort": "3389",
+                        "FromPort": 3389,
+                        "ToPort": 3389,
                         "CidrIp": {
                             "Ref": "SourceCidrForRemoteManagement"
                         }
@@ -520,7 +520,7 @@
                                     {
                                         "Ref": "UniqueResourceId"
                                     },
-                                    "_SQLServer2014"
+                                    "_SQLServer2016"
                                 ]
                             ]
                         }
@@ -534,8 +534,8 @@
                 ],
                 "NetworkInterfaces": [
                     {
-                        "AssociatePublicIpAddress": "True",
-                        "DeleteOnTermination": "True",
+                        "AssociatePublicIpAddress": true,
+                        "DeleteOnTermination": true,
                         "SubnetId": {
                             "Ref": "SubnetId"
                         },

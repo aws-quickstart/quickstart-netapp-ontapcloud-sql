@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "ONTAP Cloud Single - Cloud Manager 3.3",
+    "Description": "ONTAP Cloud Single - Cloud Manager 3.5",
     "Parameters": {
         "CloudManagerPassword": {
             "ConstraintDescription": "Password Min length is 4 and max length is 20",
@@ -331,24 +331,24 @@
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "80",
-                        "ToPort": "80",
+                        "FromPort": 80,
+                        "ToPort": 80,
                         "CidrIp": {
                             "Ref": "RemoteAccessCIDR"
                         }
                     },
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "443",
-                        "ToPort": "443",
+                        "FromPort": 443,
+                        "ToPort": 443,
                         "CidrIp": {
                             "Ref": "RemoteAccessCIDR"
                         }
                     },
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "22",
-                        "ToPort": "22",
+                        "FromPort": 22,
+                        "ToPort": 22,
                         "CidrIp": {
                             "Ref": "RemoteAccessCIDR"
                         }
@@ -383,7 +383,7 @@
                     "Ref": "OTCCompleteHandle"
                 },
                 "Timeout": "2400",
-                "Count": "1"
+                "Count": 1
             }
         },
         "OTCCompleteHandle2": {
@@ -397,7 +397,7 @@
                     "Ref": "OTCCompleteHandle2"
                 },
                 "Timeout": "2400",
-                "Count": "1"
+                "Count": 1
             }
         },
         "OTCCompleteHandle3": {
@@ -411,7 +411,7 @@
                     "Ref": "OTCCompleteHandle3"
                 },
                 "Timeout": "2400",
-                "Count": "1"
+                "Count": 1
             }
         },
         "OCCMInstance": {
@@ -511,7 +511,7 @@
                 }
             },
             "Properties": {
-                "DisableApiTermination": "FALSE",
+                "DisableApiTermination": false,
                 "ImageId": {
                     "Fn::FindInMap": [
                         "AWSAMIRegionMap",
@@ -523,8 +523,8 @@
                 },
                 "NetworkInterfaces": [
                     {
-                        "AssociatePublicIpAddress": "True",
-                        "DeleteOnTermination": "True",
+                        "AssociatePublicIpAddress": true,
+                        "DeleteOnTermination": true,
                         "SubnetId": {
                             "Ref": "SubnetId"
                         },
@@ -543,7 +543,7 @@
                 "KeyName": {
                     "Ref": "KeyPair"
                 },
-                "Monitoring": "false",
+                "Monitoring": false,
                 "UserData": {
                     "Fn::Base64": {
                         "Fn::Join": [
