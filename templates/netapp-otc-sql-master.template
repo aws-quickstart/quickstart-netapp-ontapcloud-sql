@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "This template deploys and configures a NetApp OnCommand Cloud Manager instance, a NetApp ONTAP Cloud instance, and a Windows 2012 server with SQL 2014.  All configuraiton is done for you to create the iSCSI LUNs on the ONTAP Cloud system and have them mounted and avaialble to the SQL server.  This template will also deploy everything into a new VPC and public subnet. **WARNING** This template creates Amazon EC2 Windows instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
+    "Description": "This template deploys and configures a NetApp OnCommand Cloud Manager instance, a NetApp ONTAP Cloud instance, and a Windows 2012 server with SQL 2016.  All configuraiton is done for you to create the iSCSI LUNs on the ONTAP Cloud system and have them mounted and avaialble to the SQL server.  This template will also deploy everything into a new VPC and public subnet. **WARNING** This template creates Amazon EC2 Windows instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
     "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [

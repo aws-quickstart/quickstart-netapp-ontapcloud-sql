@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "ONTAP Cloud Single - Cloud Manager 3.3",
+    "Description": "ONTAP Cloud Single - Cloud Manager 3.5",
     "Parameters": {
         "CloudManagerPassword": {
             "ConstraintDescription": "Password Min length is 4 and max length is 20",
@@ -68,49 +68,49 @@
     "Mappings": {
         "AWSAMIRegionMap": {
             "AMI": {
-                "NETAPPOCCM": "OnCommand Cloud Manager 3.3.0 Marketplace- 13/06/2017_125458-d9adb18b-c57c-4615-9bb7-a9c64efd69b1-ami-4a2e0a5c.4"
+                "NETAPPOCCM": "OnCommand Cloud Manager 3.5.0 Marketplace- 06/04/2018"
             },
-            "ap-northeast-1": {  
-                "NETAPPOCCM": "ami-8e979ee9" 
+            "ap-northeast-1": {
+                "NETAPPOCCM": "ami-78c30607"
             },
             "ap-northeast-2": {
-                "NETAPPOCCM": "ami-2e8d5240" 
+                "NETAPPOCCM": "ami-977dd6f9"
             },
             "ap-south-1": {
-                "NETAPPOCCM": "ami-c2bdc2ad" 
+                "NETAPPOCCM": "ami-0c002e63"
             },
             "ap-southeast-1": {
-                "NETAPPOCCM": "ami-b89c1edb" 
+                "NETAPPOCCM": "ami-79201905"
             },
             "ap-southeast-2": {
-                "NETAPPOCCM": "ami-cb3322a8" 
+                "NETAPPOCCM": "ami-005c8e62"
             },
             "ca-central-1": {
-                "NETAPPOCCM": "ami-38e9565c" 
+                "NETAPPOCCM": "ami-4c860528"
             },
             "eu-central-1": {
-                "NETAPPOCCM": "ami-975bfff8" 
+                "NETAPPOCCM": "ami-d507333e"
             },
             "eu-west-1": {
-                "NETAPPOCCM": "ami-bf9986d9"  
+                "NETAPPOCCM": "ami-30585c49"
             },
             "eu-west-2": {
-                "NETAPPOCCM": "ami-fba8bf9f" 
+                "NETAPPOCCM": "ami-ac56bacb"
             },
             "sa-east-1": {
-                "NETAPPOCCM": "ami-982843f4" 
+                "NETAPPOCCM": "ami-f66a339a"
             },
             "us-east-1": {
-                "NETAPPOCCM": "ami-392c0a2f" 
+                "NETAPPOCCM": "ami-14493c6b"
             },
             "us-east-2": {
-                "NETAPPOCCM": "ami-98a98ffd" 
+                "NETAPPOCCM": "ami-292b144c"
             },
             "us-west-1": {
-                "NETAPPOCCM": "ami-379ebc57" 
+                "NETAPPOCCM": "ami-c2243ea2"
             },
             "us-west-2": {
-                "NETAPPOCCM": "ami-0258537b" 
+                "NETAPPOCCM": "ami-cd6722b5"
             }
         },
         "AWSInfoRegionMap": {
@@ -331,24 +331,24 @@
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "80",
-                        "ToPort": "80",
+                        "FromPort": 80,
+                        "ToPort": 80,
                         "CidrIp": {
                             "Ref": "RemoteAccessCIDR"
                         }
                     },
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "443",
-                        "ToPort": "443",
+                        "FromPort": 443,
+                        "ToPort": 443,
                         "CidrIp": {
                             "Ref": "RemoteAccessCIDR"
                         }
                     },
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "22",
-                        "ToPort": "22",
+                        "FromPort": 22,
+                        "ToPort": 22,
                         "CidrIp": {
                             "Ref": "RemoteAccessCIDR"
                         }
@@ -383,7 +383,7 @@
                     "Ref": "OTCCompleteHandle"
                 },
                 "Timeout": "2400",
-                "Count": "1"
+                "Count": 1
             }
         },
         "OTCCompleteHandle2": {
@@ -397,7 +397,7 @@
                     "Ref": "OTCCompleteHandle2"
                 },
                 "Timeout": "2400",
-                "Count": "1"
+                "Count": 1
             }
         },
         "OTCCompleteHandle3": {
@@ -411,7 +411,7 @@
                     "Ref": "OTCCompleteHandle3"
                 },
                 "Timeout": "2400",
-                "Count": "1"
+                "Count": 1
             }
         },
         "OCCMInstance": {
@@ -511,7 +511,7 @@
                 }
             },
             "Properties": {
-                "DisableApiTermination": "FALSE",
+                "DisableApiTermination": false,
                 "ImageId": {
                     "Fn::FindInMap": [
                         "AWSAMIRegionMap",
@@ -523,8 +523,8 @@
                 },
                 "NetworkInterfaces": [
                     {
-                        "AssociatePublicIpAddress": "True",
-                        "DeleteOnTermination": "True",
+                        "AssociatePublicIpAddress": true,
+                        "DeleteOnTermination": true,
                         "SubnetId": {
                             "Ref": "SubnetId"
                         },
@@ -543,7 +543,7 @@
                 "KeyName": {
                     "Ref": "KeyPair"
                 },
-                "Monitoring": "false",
+                "Monitoring": false,
                 "UserData": {
                     "Fn::Base64": {
                         "Fn::Join": [

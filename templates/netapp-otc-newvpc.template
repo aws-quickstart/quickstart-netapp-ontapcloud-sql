@@ -228,10 +228,10 @@
                 "NetworkAclId": {
                     "Ref": "PublicNetworkAcl"
                 },
-                "RuleNumber": "100",
-                "Protocol": "-1",
+                "RuleNumber": 100,
+                "Protocol": -1,
                 "RuleAction": "allow",
-                "Egress": "false",
+                "Egress": false,
                 "CidrBlock": "0.0.0.0/0"
             }
         },
@@ -241,10 +241,10 @@
                 "NetworkAclId": {
                     "Ref": "PublicNetworkAcl"
                 },
-                "RuleNumber": "100",
-                "Protocol": "-1",
+                "RuleNumber": 100,
+                "Protocol": -1,
                 "RuleAction": "allow",
-                "Egress": "true",
+                "Egress": true,
                 "CidrBlock": "0.0.0.0/0"
             }
         },
