@@ -126,46 +126,46 @@
     "Mappings": {
         "AWSAMIRegionMap": {
             "AMI": {
-                "WS2012R2SQLSTD2016": "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP1_Standard-2018.12.12"
+                "WS2012R2SQLSTD2016": "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP1_Standard-2019.01.10"
             },
             "ap-northeast-1": {
-                "WS2012R2SQLSTD2016": "ami-019ebd8e1ccd1630c"
+                "WS2012R2SQLSTD2016": "ami-025bfff91280d6aeb"
             },
             "ap-northeast-2": {
-                "WS2012R2SQLSTD2016": "ami-038a26952b6abac22"
+                "WS2012R2SQLSTD2016": "ami-0ae68081cbd20c576"
             },
             "ap-south-1": {
-                "WS2012R2SQLSTD2016": "ami-05a227f73730e15c2"
+                "WS2012R2SQLSTD2016": "ami-0f3708351466e2934"
             },
             "ap-southeast-1": {
-                "WS2012R2SQLSTD2016": "ami-0746abff9c5fc854f"
+                "WS2012R2SQLSTD2016": "ami-035804311d7841d8e"
             },
             "ap-southeast-2": {
-                "WS2012R2SQLSTD2016": "ami-020c8fa9a83e4eaeb"
+                "WS2012R2SQLSTD2016": "ami-070e2f2654e752125"
             },
             "ca-central-1": {
-                "WS2012R2SQLSTD2016": "ami-06057064c1c98f8e8"
+                "WS2012R2SQLSTD2016": "ami-04e040855cbc51a49"
             },
             "eu-central-1": {
-                "WS2012R2SQLSTD2016": "ami-0f6852e2240653237"
+                "WS2012R2SQLSTD2016": "ami-035f31908c193ae49"
             },
             "eu-west-1": {
-                "WS2012R2SQLSTD2016": "ami-0d4809b3e7c45384e"
+                "WS2012R2SQLSTD2016": "ami-0359176930a65cba6"
             },
             "sa-east-1": {
-                "WS2012R2SQLSTD2016": "ami-0dd98c3ed1e810205"
+                "WS2012R2SQLSTD2016": "ami-047e4c9f086fd7059"
             },
             "us-east-1": {
-                "WS2012R2SQLSTD2016": "ami-0e32926c50c7761b9"
+                "WS2012R2SQLSTD2016": "ami-063278426ed561636"
             },
             "us-east-2": {
-                "WS2012R2SQLSTD2016": "ami-04342758352b736b2"
+                "WS2012R2SQLSTD2016": "ami-0ca864093d81b267d"
             },
             "us-west-1": {
-                "WS2012R2SQLSTD2016": "ami-0870b8d2797c8ada4"
+                "WS2012R2SQLSTD2016": "ami-07ad6a84dad4a1572"
             },
             "us-west-2": {
-                "WS2012R2SQLSTD2016": "ami-0c372a23f712591a1"
+                "WS2012R2SQLSTD2016": "ami-0607dd0c2afc36b0a"
             }
         },
         "AWSInfoRegionMap": {
