@@ -126,10 +126,10 @@
     "Mappings": {
         "AWSAMIRegionMap": {
             "AMI": {
-                "WS2012R2SQLSTD2016": "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP1_Standard-2019.02.13"
+                "WS2012R2SQLSTD2016": "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP1_Standard-2018.07.11"
             },
             "ap-northeast-1": {
-                "WS2012R2SQLSTD2016": "ami-01003e9d8be7e998b"
+                "WS2012R2SQLSTD2016": "ami-e705670a"
             },
             "ap-northeast-2": {
                 "WS2012R2SQLSTD2016": "ami-0ca35613e4a77e84c"
