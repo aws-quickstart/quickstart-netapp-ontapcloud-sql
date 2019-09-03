@@ -68,6 +68,10 @@
             "Description": "Amazon EC2 instance type",
             "Type": "String"
         },
+        "LatestAmiId": {
+            "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+            "Default": "/aws/service/ami-windows-latest/Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP2_Standard"
+        },
         "KeyName": {
             "ConstraintDescription": "Must be the name of an existing EC2 KeyPair.",
             "Description": "Name of an existing EC2 KeyPair",
@@ -499,13 +503,7 @@
                     "Ref": "SQLSRVInstanceProfile"
                 },
                 "ImageId": {
-                    "Fn::FindInMap": [
-                        "AWSAMIRegionMap",
-                        {
-                            "Ref": "AWS::Region"
-                        },
-                        "WS2012R2SQLSTD2016"
-                    ]
+                    "Ref": "LatestAmiId"
                 },
                 "KeyName": {
                     "Ref": "KeyName"
