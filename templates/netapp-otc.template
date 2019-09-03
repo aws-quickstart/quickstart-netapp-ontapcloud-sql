@@ -410,7 +410,7 @@
                 "Handle": {
                     "Ref": "OTCCompleteHandle3"
                 },
-                "Timeout": "2400",
+                "Timeout": "3000",
                 "Count": 1
             }
         },
