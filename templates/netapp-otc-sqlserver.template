@@ -70,7 +70,7 @@
         },
         "LatestAmiId": {
             "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-            "Default": "/aws/service/ami-windows-latest/Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP2_Standard"
+            "Default": "/aws/service/ami-windows-latest/Windows_Server-2016-English-Full-SQL_2017_Enterprise"
         },
         "KeyName": {
             "ConstraintDescription": "Must be the name of an existing EC2 KeyPair.",
