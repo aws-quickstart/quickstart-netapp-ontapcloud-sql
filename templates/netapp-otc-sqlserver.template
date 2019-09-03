@@ -128,50 +128,6 @@
         }
     },
     "Mappings": {
-        "AWSAMIRegionMap": {
-            "AMI": {
-                "WS2012R2SQLSTD2016": "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP1_Standard-2018.07.11"
-            },
-            "ap-northeast-1": {
-                "WS2012R2SQLSTD2016": "ami-e705670a"
-            },
-            "ap-northeast-2": {
-                "WS2012R2SQLSTD2016": "ami-0ca35613e4a77e84c"
-            },
-            "ap-south-1": {
-                "WS2012R2SQLSTD2016": "ami-0c1c505f51fa96b54"
-            },
-            "ap-southeast-1": {
-                "WS2012R2SQLSTD2016": "ami-08095da698a208e62"
-            },
-            "ap-southeast-2": {
-                "WS2012R2SQLSTD2016": "ami-00f74abac2772ea9e"
-            },
-            "ca-central-1": {
-                "WS2012R2SQLSTD2016": "ami-051f05cefee03be20"
-            },
-            "eu-central-1": {
-                "WS2012R2SQLSTD2016": "ami-0a71d8914b3290a58"
-            },
-            "eu-west-1": {
-                "WS2012R2SQLSTD2016": "ami-07916c7aa69881505"
-            },
-            "sa-east-1": {
-                "WS2012R2SQLSTD2016": "ami-04357cd82a0e56846"
-            },
-            "us-east-1": {
-                "WS2012R2SQLSTD2016": "ami-06c2c79260295a40c"
-            },
-            "us-east-2": {
-                "WS2012R2SQLSTD2016": "ami-09c1c6468ff0a4c77"
-            },
-            "us-west-1": {
-                "WS2012R2SQLSTD2016": "ami-02fb15657f7796533"
-            },
-            "us-west-2": {
-                "WS2012R2SQLSTD2016": "ami-0b16c410305ad5628"
-            }
-        },
         "AWSInfoRegionMap": {
             "ap-northeast-1": {
                 "Partition": "aws",
